@@ -9,7 +9,7 @@
 
 ## Sobre o Projeto
 
-O ALFA-INCLUIR nasceu da jornada pessoal de um pai em busca de ferramentas eficazes para o desenvolvimento de seu filho autista grau 3. É mais que um projeto; é uma missão de amor para empoderar outras famílias e profissionais, oferecendo suporte prático e inteligente, com foco em atividades personalizadas e recursos visuais.
+O ALFA-INCLUIR nasceu da jornada pessoal de um pai em busca de ferramentas eficazes para o desenvolvimento de seu filho autista suporte 2. É mais que um projeto; é uma missão de amor para empoderar outras famílias e profissionais, oferecendo suporte prático e inteligente, com foco em atividades personalizadas e recursos visuais.
 
 *"Como pai de uma criança autista grau 3, vivencio diariamente os desafios e as imensas alegrias dessa jornada. A busca por ferramentas que realmente entendam e atendam às necessidades únicas do meu filho me impulsionou a criar o ALFA-INCLUIR."* - Marcos Ribeiro, Idealizador.
 
@@ -24,7 +24,7 @@ Esta demonstração explora o potencial de uma plataforma integrada para auxilia
 ### 1. Gerador de Atividades Personalizadas com IA
 Crie atividades sob medida, utilizando a inteligência artificial (via Google Gemini) para adaptar sugestões ao perfil, interesses e desafios específicos de cada criança.
 
-![Gerador de Atividades com IA](ativ_ger_ia.png)
+![Gerador de Atividades com IA](ativgeria.png)
 
 ### 2. Gerador de Etiquetas Visuais
 Uma ferramenta intuitiva para criar e imprimir etiquetas com nomes, ícones/imagens e descrições (sugeridas ou manuais) para objetos e conceitos, auxiliando na comunicação e aprendizado.
