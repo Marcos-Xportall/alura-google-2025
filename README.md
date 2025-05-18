@@ -39,7 +39,7 @@ Cadastre e gerencie perfis detalhados, incluindo idade, diagnóstico (se houver)
 ### 4. Conexão com API Externa (Google Gemini)
 A funcionalidade de IA requer que o usuário (na demonstração) insira sua própria chave da API Google Gemini, garantindo que o uso seja personalizado e controlado.
 
-![Configuração da Chave API](api_conecta.png)
+![Configuração da Chave API](apiconecta.png)
 
 ### 5. Dashboard Intuitivo e Recursos Adicionais
 Navegue facilmente pelas funcionalidades através de um painel de controle amigável e acesse uma seção de recursos e dicas (placeholder para futuras expansões).
