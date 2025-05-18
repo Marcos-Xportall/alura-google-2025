@@ -1,3 +1,118 @@
+
+
+# ALFA-INCLUIR: Demonstração de Ferramentas de Apoio ao Desenvolvimento Infantil 🚀
+
+[![Assista ao Vídeo de Apresentação](banner.png)](https://youtu.be/vVo84BvM9E8?si=7ZSzUsbjGtIUQUPV) 
+*Clique na imagem acima para ver uma demonstração do projeto em ação! 
+
+---
+
+## Sobre o Projeto
+
+O ALFA-INCLUIR nasceu da jornada pessoal de um pai em busca de ferramentas eficazes para o desenvolvimento de seu filho autista grau 3. É mais que um projeto; é uma missão de amor para empoderar outras famílias e profissionais, oferecendo suporte prático e inteligente, com foco em atividades personalizadas e recursos visuais.
+
+*"Como pai de uma criança autista grau 3, vivencio diariamente os desafios e as imensas alegrias dessa jornada. A busca por ferramentas que realmente entendam e atendam às necessidades únicas do meu filho me impulsionou a criar o ALFA-INCLUIR."* - Marcos Ribeiro, Idealizador.
+
+![Missão do Projeto](missao.png)
+
+---
+
+## ✨ Funcionalidades em Destaque
+
+Esta demonstração explora o potencial de uma plataforma integrada para auxiliar no dia a dia:
+
+### 1. Gerador de Atividades Personalizadas com IA
+Crie atividades sob medida, utilizando a inteligência artificial (via Google Gemini) para adaptar sugestões ao perfil, interesses e desafios específicos de cada criança.
+
+![Gerador de Atividades com IA](ativ_ger_ia.png)
+
+### 2. Gerador de Etiquetas Visuais
+Uma ferramenta intuitiva para criar e imprimir etiquetas com nomes, ícones/imagens e descrições (sugeridas ou manuais) para objetos e conceitos, auxiliando na comunicação e aprendizado.
+
+![Gerador de Etiquetas Visuais](geraetiqueta.png)
+
+### 3. Gerenciamento de Perfis (Filhos/Alunos)
+Cadastre e gerencie perfis detalhados, incluindo idade, diagnóstico (se houver), interesses e desafios, para que as ferramentas possam oferecer sugestões ainda mais precisas.
+
+![Gerenciamento de Alunos/Perfis](alunos.png)
+
+### 4. Conexão com API Externa (Google Gemini)
+A funcionalidade de IA requer que o usuário (na demonstração) insira sua própria chave da API Google Gemini, garantindo que o uso seja personalizado e controlado.
+
+![Configuração da Chave API](api_conecta.png)
+
+### 5. Dashboard Intuitivo e Recursos Adicionais
+Navegue facilmente pelas funcionalidades através de um painel de controle amigável e acesse uma seção de recursos e dicas (placeholder para futuras expansões).
+
+![Tela de Atividades Sugeridas ou Recursos](atividades.png) 
+
+---
+
+## 🚀 Como Usar
+
+### Opção 1: Acesso à Versão Web (Online)
+Experimente rapidamente a demonstração hospedada:
+*   **URL:** [http://xportall.com.br:1010/alfa-incluir-demo-php/](http://xportall.com.br:1010/alfa-incluir-demo-php/)
+
+### Opção 2: Executar Localmente com XAMPP
+Siga as instruções detalhadas no arquivo:
+👉 **[instalação_importante.md](instalação_importante.md)** 👈
+
+Este arquivo contém todos os passos para configurar o XAMPP, o projeto e a chave da API Google Gemini em sua máquina local.
+
+---
+
+## A Missão ALFA-INCLUIR
+
+![Desenvolvimento Contínuo](desenvolvimento.png)
+
+Este projeto é movido pela paixão de criar um futuro mais inclusivo e capacitador para todas as crianças.
+
+## Estrutura do Projeto
+*   `/alfa-incluir-demo-php/`: Contém todos os arquivos PHP, JS, CSS e assets do projeto web.
+*   `README.md`: Este arquivo de apresentação.
+*   `instalacao_importante.md`: Guia detalhado de instalação local.
+*   `*.png`: Imagens de tela usadas nesta documentação (localizadas na raiz do repositório).
+
+---
+*Este é um projeto de demonstração. As funcionalidades e o design estão em constante evolução.*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ✨ ALFA-INCLUIR ✨
 
 **Empoderando o Desenvolvimento Infantil com Inteligência Artificial, Amor e Compreensão.**
@@ -6,9 +121,7 @@
 
 ## 🌟 Nossa Essência
 
-<p align="center">
-  <img src="[[LINK_PARA_SEU_MASCOTE_ALFA_AMIGAVEL.png_OU_svg](https://images.squarespace-cdn.com/content/v1/5b939410f407b457934a287f/1557744081373-WIN3394FNPRAI8A6B7N3/common-1300520_1280.png)" alt="Mascote Alfa Amigável](https://images.squarespace-cdn.com/content/v1/5b939410f407b457934a287f/1557744081373-WIN3394FNPRAI8A6B7N3/common-1300520_1280.png)" width="200"/>
-</p>
+
 
 Bem-vindo ao ALFA-INCLUIR! Nossa plataforma inteligente e colaborativa nasceu da necessidade e do amor, com a missão de **enriquecer o desenvolvimento** de cada criança. Queremos ser seu parceiro, oferecendo ferramentas que simplificam o planejamento e potencializam o aprendizado, especialmente para crianças com Transtorno do Espectro Autista (TEA), TDAH e outros desafios.
 
