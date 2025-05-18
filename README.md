@@ -7,7 +7,7 @@
 ## 🌟 Nossa Essência
 
 <p align="center">
-  <img src="LINK_PARA_SEU_MASCOTE_ALFA_AMIGAVEL.png_OU_svg" alt="Mascote Alfa Amigável" width="200"/>
+  <img src="[LINK_PARA_SEU_MASCOTE_ALFA_AMIGAVEL.png_OU_svg" alt="Mascote Alfa Amigável](https://images.squarespace-cdn.com/content/v1/5b939410f407b457934a287f/1557744081373-WIN3394FNPRAI8A6B7N3/common-1300520_1280.png)" width="200"/>
 </p>
 
 Bem-vindo ao ALFA-INCLUIR! Nossa plataforma inteligente e colaborativa nasceu da necessidade e do amor, com a missão de **enriquecer o desenvolvimento** de cada criança. Queremos ser seu parceiro, oferecendo ferramentas que simplificam o planejamento e potencializam o aprendizado, especialmente para crianças com Transtorno do Espectro Autista (TEA), TDAH e outros desafios.
