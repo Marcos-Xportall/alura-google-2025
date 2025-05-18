@@ -1,0 +1,33 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Define a base para as regras de reescrita.
+    # Crucial porque seu projeto está na subpasta /alfa-incluir-demo-php/
+    RewriteBase /alfa-incluir-demo-php/
+
+    # CONDIÇÕES PARA NÃO REESCREVER ARQUIVOS/DIRETÓRIOS EXISTENTES:
+    # Se a URL solicitada corresponde a um arquivo existente...
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    # OU se a URL solicitada corresponde a um diretório existente...
+    RewriteCond %{REQUEST_FILENAME} -d
+    # ...então não faça nada com esta regra e pare aqui para esta requisição.
+    RewriteRule ^ - [L]
+
+    # REGRAS DE REESCRITA PARA O DASHBOARD:
+    # Estas regras só serão alcançadas se as condições acima forem FALSAS
+    # (ou seja, a URL NÃO é um arquivo ou diretório existente).
+
+    # Regra para URLs como /dashboard/alguma-coisa/outra-coisa ou /dashboard/alguma-coisa
+    # O (.*) captura tudo o que vem depois de "dashboard/"
+    RewriteRule ^dashboard/(.*)$ dashboard.php?view=$1 [L,QSA]
+
+    # Regra para a URL raiz do dashboard: /dashboard ou /dashboard/
+    # (deve vir DEPOIS da regra mais específica acima, ou ter condições próprias se necessário)
+    # Para simplificar, vamos garantir que ela também não seja um arquivo/diretório
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^dashboard/?$ dashboard.php?view=home [L,QSA]
+
+</IfModule>
