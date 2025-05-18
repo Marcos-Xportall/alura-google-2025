@@ -1,0 +1,109 @@
+<!-- pages/dashboard/minha-conta.html -->
+<div class="container-fluid px-md-0">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Configurações da Conta</h5>
+        </div>
+        <div class="card-body p-4">
+            <h6 class="text-primary fw-semibold">Chave da API Google Gemini</h6>
+            <p class="text-muted small">
+                Para usar funcionalidades que dependem da Inteligência Artificial do Google Gemini (como o Gerador de Atividades),
+                você precisa fornecer sua própria chave de API. Esta chave será armazenada apenas durante a sua sessão atual
+                e não será salva permanentemente no nosso sistema nesta versão de demonstração.
+            </p>
+            
+            <form id="formApiKey">
+                <div class="mb-3">
+                    <label for="geminiApiKey" class="form-label">Sua Chave da API Gemini:</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control form-control-lg" id="geminiApiKey" 
+                               placeholder="Cole sua chave de API aqui (ex: AIzaSy...)" 
+                               aria-describedby="apiKeyHelp" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggleApiKeyVisibility">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+                    </div>
+                    <div id="apiKeyHelp" class="form-text">
+                        Você pode obter uma chave de API no <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save-fill me-1"></i> Salvar Chave na Sessão
+                </button>
+            </form>
+            <div id="apiKeyMessage" class="mt-3"></div>
+
+            <hr class="my-4">
+            <h6 class="text-primary fw-semibold mt-4">Informações do Usuário (Demonstração)</h6>
+            <p><strong>Nome:</strong> <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'N/A'); ?></p>
+            <p><strong>Perfil:</strong> <?php echo htmlspecialchars($_SESSION['user_role'] ?? 'N/A'); ?></p>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const formApiKey = document.getElementById('formApiKey');
+    const geminiApiKeyInput = document.getElementById('geminiApiKey');
+    const apiKeyMessage = document.getElementById('apiKeyMessage');
+    const toggleApiKeyVisibilityButton = document.getElementById('toggleApiKeyVisibility');
+
+    // Carregar chave da sessão se existir (apenas para feedback visual, não para preencher o campo)
+    // Não vamos pré-preencher o campo de senha por segurança e para o usuário confirmar.
+    fetch(APP_BASE_PATH + '/api/get_api_key_status.php') // Novo endpoint para verificar status
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_set) {
+                apiKeyMessage.innerHTML = '<div class="alert alert-info small p-2"><i class="bi bi-info-circle-fill me-1"></i> Uma chave de API já foi configurada para esta sessão. Você pode substituí-la abaixo.</div>';
+            } else {
+                 apiKeyMessage.innerHTML = '<div class="alert alert-warning small p-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> Nenhuma chave de API configurada para esta sessão. Algumas funcionalidades de IA podem não funcionar.</div>';
+            }
+        });
+
+
+    if (formApiKey) {
+        formApiKey.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const apiKey = geminiApiKeyInput.value.trim();
+            apiKeyMessage.innerHTML = '';
+
+            if (!apiKey) {
+                apiKeyMessage.innerHTML = '<div class="alert alert-danger">Por favor, insira uma chave de API.</div>';
+                return;
+            }
+
+            // Enviar a chave para o servidor para ser salva na sessão
+            fetch(APP_BASE_PATH + '/api/save_api_key.php', { // Novo endpoint para salvar
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ apiKey: apiKey }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    apiKeyMessage.innerHTML = '<div class="alert alert-success">Chave da API salva com sucesso para esta sessão!</div>';
+                    geminiApiKeyInput.value = ''; // Limpa o campo após salvar
+                } else {
+                    apiKeyMessage.innerHTML = '<div class="alert alert-danger">Erro ao salvar a chave: ' + (data.error || 'Erro desconhecido.') + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao salvar API Key:', error);
+                apiKeyMessage.innerHTML = '<div class="alert alert-danger">Erro de comunicação ao salvar a chave.</div>';
+            });
+        });
+    }
+
+    if (toggleApiKeyVisibilityButton && geminiApiKeyInput) {
+        toggleApiKeyVisibilityButton.addEventListener('click', function() {
+            const type = geminiApiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            geminiApiKeyInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye-fill');
+            this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+        });
+    }
+});
+</script>

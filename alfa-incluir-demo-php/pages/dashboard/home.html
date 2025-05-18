@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-md-6 col-xl-4 mb-4">
+        <div class="card dashboard-card text-bg-primary">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-magic display-4 me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Gerar Nova Atividade</h5>
+                        <p class="card-text small">Crie atividades personalizadas com IA.</p>
+                    </div>
+                </div>
+                <a href="<?php echo $basePath; ?>/dashboard/gerador-atividades" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 mb-4">
+        <div class="card dashboard-card text-bg-info">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-people-fill display-4 me-3"></i>
+                    <div>
+                        <h5 class="card-title mb-1">Meus Filhos/Alunos</h5>
+                        <p class="card-text small">Veja e gerencie perfis.</p>
+                    </div>
+                </div>
+                <a href="<?php echo $basePath; ?>/dashboard/meus-filhos" class="stretched-link"></a> <!-- Ajuste o link -->
+            </div>
+        </div>
+    </div>
+    <!-- Adicione maias cards de atalho ou informações aqui -->
+</div>
+
+<h4>Bem-vindo(a) de volta, <?php echo htmlspecialchars($_SESSION['user_greeting'] ?? $_SESSION['user_name']); ?>!</h4>
+<p>Este é o seu painel ALFA-INCLUIR. Utilize o menu lateral para navegar pelas funcionalidades disponíveis.</p>
+<p>Sua próxima grande descoberta no desenvolvimento infantil começa aqui!</p>

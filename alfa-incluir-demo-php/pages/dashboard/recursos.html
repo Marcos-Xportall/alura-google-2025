@@ -1,0 +1,543 @@
+<!-- pages/dashboard/dicas-personalizadas.html -->
+
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-lightbulb text-primary fs-3 me-2"></i>
+            <h5 class="mb-0">Dicas Personalizadas</h5>
+        </div>
+        <a href="dashboard.php" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Voltar ao Painel
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                Dicas personalizadas geradas automaticamente com base no perfil e histórico da criança.
+            </div>
+        </div>
+    </div>
+
+    <!-- Seletor de perfil -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0 fw-semibold">Selecione um Perfil</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="perfilSelector" class="form-label">Perfil da Criança</label>
+                    <select class="form-select" id="perfilSelector">
+                        <option value="" selected disabled>Escolha um perfil para ver dicas personalizadas...</option>
+                        <!-- Será preenchido via JavaScript -->
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" id="btnGerarDicas">
+                        <i class="bi bi-magic me-2"></i>Gerar Dicas Personalizadas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container para as dicas personalizadas -->
+    <div id="dicasPersonalizadasContainer">
+        <!-- Estado inicial vazio - será preenchido pelo JavaScript -->
+        <div class="text-center p-5 bg-light rounded-3">
+            <i class="bi bi-lightbulb fs-1 text-muted mb-3"></i>
+            <h4 class="text-muted">Dicas Personalizadas</h4>
+            <p class="mb-4">Selecione um perfil acima para receber dicas e estratégias personalizadas para apoiar o desenvolvimento da criança.</p>
+            <p class="small text-muted">As dicas são geradas automaticamente com base no perfil, interesses, desafios e histórico de atividades.</p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Dicas Personalizadas: Inicializando componente...");
+    
+    // Elementos DOM
+    const perfilSelector = document.getElementById('perfilSelector');
+    const btnGerarDicas = document.getElementById('btnGerarDicas');
+    const dicasContainer = document.getElementById('dicasPersonalizadasContainer');
+    
+    // Verificar elementos essenciais
+    if (!perfilSelector || !btnGerarDicas || !dicasContainer) {
+        console.error("Dicas Personalizadas: Elementos DOM essenciais não encontrados!");
+        mostrarErro("Erro ao inicializar componente: Elementos essenciais não encontrados.");
+        return;
+    }
+    
+    // Verificar dados mockados
+    if (typeof mockAlunos === 'undefined' || !Array.isArray(mockAlunos) || mockAlunos.length === 0) {
+        console.error("Dicas Personalizadas: 'mockAlunos' não disponível ou vazio!");
+        
+        // Mostrar mensagem amigável
+        perfilSelector.innerHTML = '<option value="" disabled selected>Nenhum perfil disponível</option>';
+        mostrarMensagem("Por favor, adicione perfis de crianças no sistema para receber dicas personalizadas.", "warning");
+        
+        btnGerarDicas.disabled = true;
+        return;
+    }
+    
+    // Verificar histórico de atividades (opcional)
+    const temHistorico = typeof mockHistoricoAtividades !== 'undefined' && Array.isArray(mockHistoricoAtividades);
+    console.log("Dicas Personalizadas: Histórico de atividades disponível:", temHistorico);
+    
+    // Preencher o seletor de perfis
+    mockAlunos.forEach(aluno => {
+        const option = document.createElement('option');
+        option.value = aluno.id;
+        option.textContent = `${aluno.nome} (${aluno.idade} anos - ${aluno.perfil.substring(0, 30)}${aluno.perfil.length > 30 ? '...' : ''})`;
+        perfilSelector.appendChild(option);
+    });
+    
+    // Event listener para o botão
+    btnGerarDicas.addEventListener('click', function() {
+        gerarDicasPersonalizadas();
+    });
+    
+    // Verificar parâmetros da URL para pré-seleção
+    const urlParams = new URLSearchParams(window.location.search);
+    const perfilId = urlParams.get('aluno');
+    if (perfilId) {
+        perfilSelector.value = perfilId;
+        
+        // Gerar dicas automaticamente se o perfil for válido
+        if (perfilSelector.value) {
+            setTimeout(() => gerarDicasPersonalizadas(), 500);
+        }
+    }
+    
+    // Função principal para gerar dicas personalizadas
+    function gerarDicasPersonalizadas() {
+        const perfilId = perfilSelector.value;
+        
+        if (!perfilId) {
+            alert("Por favor, selecione um perfil de criança primeiro.");
+            return;
+        }
+        
+        // Encontrar o aluno correspondente
+        const aluno = mockAlunos.find(a => String(a.id) === String(perfilId));
+        if (!aluno) {
+            mostrarErro("Perfil não encontrado. Por favor, tente novamente.");
+            return;
+        }
+        
+        // Mostrar indicador de carregamento
+        dicasContainer.innerHTML = `
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Gerando dicas personalizadas...</span>
+                </div>
+                <p class="mt-3">Analisando perfil e gerando dicas personalizadas...</p>
+            </div>
+        `;
+        
+        // Pequeno timeout para simular processamento
+        setTimeout(() => {
+            const dicas = analisarPerfilEGerarDicas(aluno);
+            exibirDicasPersonalizadas(dicas);
+        }, 1000);
+    }
+    
+    // Função para analisar o perfil e gerar dicas
+    function analisarPerfilEGerarDicas(aluno) {
+        console.log("Dicas Personalizadas: Analisando perfil de", aluno.nome);
+        
+        // Identificar características principais do perfil
+        const caracteristicas = {
+            temTEA: aluno.perfil.toLowerCase().includes('autis') || aluno.perfil.toLowerCase().includes('tea'),
+            temTDAH: aluno.perfil.toLowerCase().includes('tdah') || aluno.perfil.toLowerCase().includes('atenção'),
+            temDesafiosComunicacao: (aluno.desafios || '').toLowerCase().includes('comunica') || 
+                                    (aluno.desafios || '').toLowerCase().includes('fala') || 
+                                    (aluno.desafios || '').toLowerCase().includes('verbal'),
+            temDesafiosSensoriais: (aluno.desafios || '').toLowerCase().includes('sensorial') || 
+                                    (aluno.desafios || '').toLowerCase().includes('sensibilidade'),
+            temDesafiosMotores: (aluno.desafios || '').toLowerCase().includes('motor'),
+            interesses: aluno.interesses ? aluno.interesses.split(',').map(i => i.trim()) : []
+        };
+        
+        // Buscar histórico de atividades (se disponível)
+        let atividadesEficazes = [];
+        if (temHistorico) {
+            const historicoAluno = mockHistoricoAtividades.filter(h => String(h.idAluno) === String(aluno.id));
+            
+            // Identificar atividades bem avaliadas
+            atividadesEficazes = historicoAluno
+                .filter(h => h.aplicada && h.notaEficacia >= 4)
+                .map(h => h.titulo);
+        }
+        
+        // Array para armazenar as dicas geradas
+        const dicas = [];
+        
+        // 1. Dica baseada no diagnóstico principal
+        if (caracteristicas.temTEA) {
+            dicas.push({
+                titulo: "Apoio para Autismo",
+                texto: `Para ${aluno.nome}, que tem ${aluno.idade} anos e está no espectro autista, é importante oferecer estrutura visual e previsibilidade. Use cronogramas visuais para mostrar a sequência de atividades do dia e prepare antecipadamente para mudanças na rotina.`,
+                categoria: "Rotina e Estrutura",
+                prioridade: "Alta"
+            });
+        } else if (caracteristicas.temTDAH) {
+            dicas.push({
+                titulo: "Estratégias para TDAH",
+                texto: `${aluno.nome} pode se beneficiar de tarefas divididas em etapas menores, com pausas frequentes. Considere usar um cronômetro visual e oferecer recompensas imediatas para tarefas concluídas. Ambiente organizado e com poucos estímulos distratores também ajuda.`,
+                categoria: "Foco e Atenção",
+                prioridade: "Alta"
+            });
+        } else {
+            dicas.push({
+                titulo: "Apoio ao Desenvolvimento",
+                texto: `Para apoiar o desenvolvimento de ${aluno.nome}, estabeleça rotinas consistentes e ofereça atividades adequadas ao seu perfil de ${aluno.perfil}. Valorize seus pontos fortes e ofereça apoio extra nas áreas desafiadoras.`,
+                categoria: "Desenvolvimento Geral",
+                prioridade: "Alta"
+            });
+        }
+        
+        // 2. Dica baseada em desafios específicos
+        if (caracteristicas.temDesafiosComunicacao) {
+            dicas.push({
+                titulo: "Apoio à Comunicação",
+                texto: `${aluno.nome} apresenta desafios na comunicação. Considere usar suportes visuais, gestos e, se necessário, sistemas de comunicação alternativa. Dê tempo extra para processar informações verbais e responder. Mantenha instruções claras e concisas.`,
+                categoria: "Comunicação",
+                prioridade: "Média"
+            });
+        } else if (caracteristicas.temDesafiosSensoriais) {
+            dicas.push({
+                titulo: "Suporte Sensorial",
+                texto: `Observe quais estímulos causam desconforto em ${aluno.nome} e crie um ambiente adequado, reduzindo estímulos desconfortáveis. Um "kit sensorial" com objetos calmantes pode ajudar em momentos de sobrecarga sensorial. Ofereça pausas sensoriais quando necessário.`,
+                categoria: "Integração Sensorial",
+                prioridade: "Média"
+            });
+        } else if (caracteristicas.temDesafiosMotores) {
+            dicas.push({
+                titulo: "Desenvolvimento Motor",
+                texto: `Atividades como massinha de modelar, recorte, colagem e jogos de encaixe podem ajudar ${aluno.nome} a desenvolver habilidades motoras finas. Para coordenação global, considere brincadeiras ao ar livre com movimentos amplos como pular, correr e jogar bola.`,
+                categoria: "Habilidades Motoras",
+                prioridade: "Média"
+            });
+        } else {
+            dicas.push({
+                titulo: "Desenvolvimento Socioemocional",
+                texto: `Incentive ${aluno.nome} a expressar seus sentimentos e a reconhecer emoções em si e nos outros. Jogos de interpretação de papéis e histórias sobre emoções podem ser ferramentas valiosas para desenvolver empatia e habilidades sociais.`,
+                categoria: "Competências Socioemocionais",
+                prioridade: "Média"
+            });
+        }
+        
+        // 3. Dica baseada nos interesses da criança
+        if (caracteristicas.interesses.length > 0) {
+            const interesse = caracteristicas.interesses[0];
+            dicas.push({
+                titulo: "Motivação através de Interesses",
+                texto: `Aproveite o interesse de ${aluno.nome} por ${interesse} como porta de entrada para o aprendizado. Incorpore ${interesse} em atividades educativas, como contar histórias, jogos matemáticos ou projetos artísticos relacionados a este tema.`,
+                categoria: "Motivação e Engajamento",
+                prioridade: "Média"
+            });
+        }
+        
+        // 4. Dica baseada em atividades bem-sucedidas anteriores
+        if (atividadesEficazes.length > 0) {
+            dicas.push({
+                titulo: "Construindo a partir de Sucessos",
+                texto: `A atividade "${atividadesEficazes[0]}" teve ótimos resultados com ${aluno.nome}. Considere criar variações desta atividade para trabalhar outras habilidades, mantendo o formato que funcionou bem.`,
+                categoria: "Histórico de Sucesso",
+                prioridade: "Alta"
+            });
+        }
+        
+        // 5. Dica baseada na idade
+        const dicasPorIdade = {
+            "3-4": "Nesta idade, atividades sensoriais e jogos simbólicos são fundamentais. Explore texturas, sons e movimentos variados.",
+            "5-6": "Jogos com regras simples ajudam a desenvolver habilidades sociais e autoregulação nesta fase. Incorpore também atividades de pré-alfabetização e conceitos matemáticos básicos.",
+            "7-8": "Atividades que envolvem leitura, escrita e matemática de forma lúdica são importantes nesta etapa. Projetos que estimulam criatividade e trabalho em equipe também são valiosos.",
+            "9-10": "Projetos mais complexos que estimulam independência, planejamento e resolução de problemas são ideais para esta faixa etária."
+        };
+        
+        let faixaIdade;
+        if (aluno.idade <= 4) faixaIdade = "3-4";
+        else if (aluno.idade <= 6) faixaIdade = "5-6";
+        else if (aluno.idade <= 8) faixaIdade = "7-8";
+        else faixaIdade = "9-10";
+        
+        dicas.push({
+            titulo: `Dica para ${aluno.idade} anos`,
+            texto: `${dicasPorIdade[faixaIdade]} Lembre-se de respeitar o ritmo individual de ${aluno.nome} e celebrar cada conquista.`,
+            categoria: "Desenvolvimento por Idade",
+            prioridade: "Baixa"
+        });
+        
+        // Retorna as dicas organizadas por prioridade
+        const ordemPrioridade = { "Alta": 0, "Média": 1, "Baixa": 2 };
+        return {
+            aluno: aluno,
+            dicas: dicas.sort((a, b) => ordemPrioridade[a.prioridade] - ordemPrioridade[b.prioridade]),
+            dataGeracao: new Date().toLocaleDateString('pt-BR')
+        };
+    }
+    
+    // Função para exibir as dicas na interface
+    function exibirDicasPersonalizadas(dados) {
+        const { aluno, dicas, dataGeracao } = dados;
+        
+        // Cores para prioridades
+        const coresPrioridade = {
+            "Alta": "danger",
+            "Média": "warning",
+            "Baixa": "info"
+        };
+        
+        // Criar HTML para o cabeçalho
+        let html = `
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightbulb-fill me-2"></i>
+                        Dicas Personalizadas para ${aluno.nome}
+                    </h5>
+                    <button class="btn btn-sm btn-light" onclick="imprimirDicas()">
+                        <i class="bi bi-printer me-1"></i>Imprimir
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 d-flex flex-wrap">
+                        <span class="badge bg-light text-dark border me-2 mb-1">Idade: ${aluno.idade} anos</span>
+                        <span class="badge bg-light text-dark border me-2 mb-1">Perfil: ${aluno.perfil}</span>
+                        <span class="badge bg-light text-dark border mb-1">Gerado em: ${dataGeracao}</span>
+                    </div>
+                    
+                    <div class="alert alert-light border">
+                        <p class="mb-0"><i class="bi bi-info-circle me-2"></i>Estas dicas foram geradas automaticamente com base no perfil e histórico de ${aluno.nome}. São recomendações personalizadas para apoiar seu desenvolvimento.</p>
+                    </div>
+        `;
+        
+        // Adicionar cada dica
+        dicas.forEach(dica => {
+            html += `
+                <div class="card mb-3 border-${coresPrioridade[dica.prioridade]}">
+                    <div class="card-header bg-${coresPrioridade[dica.prioridade]} bg-opacity-10 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-${coresPrioridade[dica.prioridade]}">${dica.titulo}</h5>
+                        <span class="badge bg-${coresPrioridade[dica.prioridade]}">${dica.categoria}</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">${dica.texto}</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Adicionar legenda e fechar o card
+        html += `
+                    <div class="mt-3">
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-danger p-2">Alta prioridade</span>
+                            <span class="badge bg-warning p-2">Média prioridade</span>
+                            <span class="badge bg-info p-2">Baixa prioridade</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Adicionar dicas relacionadas
+        html += `
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 fw-semibold">Recursos Relacionados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        ${gerarRecursosRelacionados(aluno)}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Atualizar o container
+        dicasContainer.innerHTML = html;
+        
+        // Adicionar função de impressão ao window
+        window.imprimirDicas = function() {
+            const conteudoImpressao = prepararConteudoImpressao(dados);
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(conteudoImpressao);
+            janelaImpressao.document.close();
+            
+            setTimeout(() => {
+                janelaImpressao.print();
+            }, 500);
+        };
+    }
+    
+    // Função para gerar recursos relacionados
+    function gerarRecursosRelacionados(aluno) {
+        // Verificar se temos recursos mockados
+        if (typeof mockRecursos === 'undefined' || !Array.isArray(mockRecursos) || mockRecursos.length === 0) {
+            return `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Nenhum recurso relacionado disponível no momento.
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Determinar categorias relevantes
+        const categorias = [];
+        if (aluno.perfil.toLowerCase().includes('autis') || aluno.perfil.toLowerCase().includes('tea')) {
+            categorias.push('TEA');
+        }
+        if (aluno.perfil.toLowerCase().includes('tdah')) {
+            categorias.push('TDAH');
+        }
+        if ((aluno.desafios || '').toLowerCase().includes('comunica') || (aluno.desafios || '').toLowerCase().includes('fala')) {
+            categorias.push('Comunicação');
+        }
+        
+        // Se não encontrou categorias específicas, adiciona Geral
+        if (categorias.length === 0) {
+            categorias.push('Geral');
+        }
+        
+        // Filtrar recursos por categoria
+        const recursosRelevantes = mockRecursos.filter(r => categorias.includes(r.categoria));
+        
+        // Se não encontrou recursos, retorna mensagem
+        if (recursosRelevantes.length === 0) {
+            return `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Nenhum recurso específico encontrado para o perfil. Visite a página de Recursos para ver todos os materiais disponíveis.
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Gerar cards para até 3 recursos
+        let html = '';
+        recursosRelevantes.slice(0, 3).forEach(recurso => {
+            // Mapear categoria para cor
+            const corPorCategoria = {
+                'TEA': 'info',
+                'TDAH': 'warning',
+                'Comunicação': 'success',
+                'Dislexia': 'danger',
+                'Geral': 'primary'
+            };
+            const cor = corPorCategoria[recurso.categoria] || 'primary';
+            
+            html += `
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-${cor} bg-opacity-10">
+                            <h6 class="card-title mb-0 text-${cor}">${recurso.titulo}</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small">${recurso.descricao}</p>
+                        </div>
+                        <div class="card-footer bg-light text-center">
+                            <a href="${recurso.link}" class="btn btn-sm btn-${cor}" target="_blank">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Acessar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        return html;
+    }
+    
+    // Função para preparar conteúdo para impressão
+    function prepararConteudoImpressao(dados) {
+        const { aluno, dicas, dataGeracao } = dados;
+        
+        let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Dicas Personalizadas para ${aluno.nome}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                    .header { text-align: center; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }
+                    .dica { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 20px; }
+                    .dica-titulo { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+                    .dica-categoria { color: #666; font-style: italic; margin-bottom: 10px; }
+                    .dica-texto { margin-bottom: 0; }
+                    .alta { border-left: 4px solid #dc3545; }
+                    .media { border-left: 4px solid #ffc107; }
+                    .baixa { border-left: 4px solid #0dcaf0; }
+                    .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Dicas Personalizadas</h1>
+                    <p>
+                        <strong>Para:</strong> ${aluno.nome} (${aluno.idade} anos)<br>
+                        <strong>Perfil:</strong> ${aluno.perfil}<br>
+                        <strong>Data de geração:</strong> ${dataGeracao}
+                    </p>
+                </div>
+        `;
+        
+        // Adicionar cada dica
+        dicas.forEach(dica => {
+            const classesPrioridade = {
+                "Alta": "alta",
+                "Média": "media",
+                "Baixa": "baixa"
+            };
+            
+            html += `
+                <div class="dica ${classesPrioridade[dica.prioridade]}">
+                    <div class="dica-titulo">${dica.titulo}</div>
+                    <div class="dica-categoria">Categoria: ${dica.categoria} | Prioridade: ${dica.prioridade}</div>
+                    <p class="dica-texto">${dica.texto}</p>
+                </div>
+            `;
+        });
+        
+        // Adicionar rodapé e fechar documento
+        html += `
+                <div class="footer">
+                    <p>Gerado automaticamente por Alfa Incluir em ${dataGeracao}</p>
+                    <p>Este documento contém dicas personalizadas baseadas no perfil e histórico de ${aluno.nome}.</p>
+                </div>
+            </body>
+            </html>
+        `;
+        
+        return html;
+    }
+    
+    // Funções auxiliares para mensagens
+    function mostrarMensagem(mensagem, tipo = "info") {
+        dicasContainer.innerHTML = `
+            <div class="alert alert-${tipo}">
+                <i class="bi bi-info-circle me-2"></i>
+                ${mensagem}
+            </div>
+        `;
+    }
+    
+    function mostrarErro(mensagem) {
+        dicasContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Erro:</strong> ${mensagem}
+            </div>
+        `;
+    }
+    
+    console.log("Dicas Personalizadas: Componente inicializado com sucesso!");
+});
+</script>

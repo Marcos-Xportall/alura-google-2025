@@ -1,0 +1,228 @@
+<!-- pages/dashboard/Meus-filhos.html -->
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div class="ms-auto">
+        <button class="btn btn-success btn-lg shadow-sm" id="btnAdicionarFilhoView">
+            <i class="bi bi-person-plus-fill me-2"></i>Adicionar Novo Perfil de Filho
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm dashboard-card">
+    <div class="card-header bg-light-subtle d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 fw-semibold text-primary">
+            <i class="bi bi-list-check me-2"></i>Perfis dos Filhos Cadastrados
+        </h5>
+        <span class="badge bg-primary rounded-pill fs-6" id="contadorFilhosView">0</span>
+    </div>
+    <div class="card-body p-0">
+        <div id="listaFilhosContainerView" class="list-group list-group-flush">
+            <!-- Placeholder inicial. Será substituído. -->
+            <div id="placeholderCarregandoFilhosView" class="list-group-item text-center p-4 text-muted">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                Carregando perfis dos filhos...
+            </div>
+            <!-- Os itens da lista serão inseridos aqui pelo JavaScript -->
+        </div>
+    </div>
+    <div class="card-footer text-muted small text-end py-2" id="footerListaFilhosView" style="display: none;">
+        Total de <span id="totalFilhosFooterView" class="fw-bold">0</span> perfis.
+    </div>
+</div>
+
+<!-- Cards de destaque para cada perfil -->
+<div class="mt-4">
+    <h5 class="mb-3 fw-semibold text-primary border-bottom pb-2">
+        <i class="bi bi-card-list me-2"></i>Detalhes de Perfil
+    </h5>
+
+    <div class="row" id="cardsFilhosContainer">
+        <!-- Cards serão inseridos aqui pelo JavaScript -->
+    </div>
+</div>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("MeusFilhosView: DOMContentLoaded - Script iniciado.");
+
+    const listaDiv = document.getElementById('listaFilhosContainerView');
+    const cardsContainer = document.getElementById('cardsFilhosContainer');
+    const placeholderCarregando = document.getElementById('placeholderCarregandoFilhosView');
+    const contadorBadge = document.getElementById('contadorFilhosView');
+    const totalFooter = document.getElementById('totalFilhosFooterView');
+    const footerElement = document.getElementById('footerListaFilhosView');
+    const btnAdicionar = document.getElementById('btnAdicionarFilhoView');
+
+    // Funções Utilitárias
+    function htmlspecialcharsLocal(str) {
+        if (typeof str !== 'string') return String(str);
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    function escapeJsStringLocal(str) {
+        if (typeof str !== 'string') return '';
+        return str.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r");
+    }
+
+    // Definir ações para os botões
+    window.acaoFilho = function(acao, nome, id) {
+        if (acao === 'Excluir') {
+            if (confirm(`Tem certeza que deseja excluir o perfil de ${htmlspecialcharsLocal(nome)}?`)) {
+                const itemParaRemover = document.getElementById(`filho-item-${id}`);
+                const cardParaRemover = document.getElementById(`filho-card-${id}`);
+                if (itemParaRemover) itemParaRemover.remove();
+                if (cardParaRemover) cardParaRemover.remove();
+                atualizarContagemVisual();
+                alert(`Perfil de ${htmlspecialcharsLocal(nome)} removido com sucesso (simulação).`);
+            }
+        } else if (acao === 'Editar') {
+            alert(`Simulação: Editando perfil de ${htmlspecialcharsLocal(nome)}.`);
+        } else if (acao === 'GerarAtividade') {
+            // Simulação de navegação para página gerador-atividades.html com o aluno selecionado
+            alert(`Simulação: Redirecionando para gerador de atividades para ${htmlspecialcharsLocal(nome)}.`);
+            // Em uma implementação real, você poderia usar:
+            // window.location.href = "gerador-atividades.html?aluno=" + encodeURIComponent(id);
+        }
+    };
+
+    if (btnAdicionar) {
+        btnAdicionar.onclick = function() {
+            alert("Simulação: Formulário para adicionar novo perfil de filho aberto.");
+        };
+    }
+
+    function atualizarContagemVisual() {
+        const itensAtuais = listaDiv.querySelectorAll('.filho-item-class').length;
+        if (contadorBadge) contadorBadge.textContent = itensAtuais;
+        if (totalFooter) totalFooter.textContent = itensAtuais;
+        if (footerElement) footerElement.style.display = itensAtuais > 0 ? 'block' : 'none';
+
+        if (itensAtuais === 0) {
+            if (placeholderCarregando) placeholderCarregando.classList.add('d-none');
+            listaDiv.innerHTML = `
+                <div class="list-group-item text-center p-5 text-muted">
+                    <i class="bi bi-emoji-neutral fs-1 d-block mb-3 text-secondary"></i>
+                    <h5 class="mb-2">Nenhum perfil de filho cadastrado.</h5>
+                    <p>Clique em "Adicionar Novo Perfil de Filho" para começar.</p>
+                </div>`;
+            
+            // Também limpa a área de cards
+            cardsContainer.innerHTML = `
+                <div class="col-12 text-center p-5 bg-light rounded-3">
+                    <p class="text-muted">Nenhum perfil disponível para exibir.</p>
+                </div>`;
+        }
+    }
+
+    // Verificar elementos DOM essenciais
+    if (!listaDiv || !cardsContainer) {
+        console.error("MeusFilhosView: Elementos DOM essenciais não foram encontrados!");
+        if (placeholderCarregando) placeholderCarregando.innerHTML = '<p class="text-danger p-3">Erro ao carregar a interface.</p>';
+        return;
+    }
+
+    // Verificar e acessar mockAlunos
+    console.log("MeusFilhosView: Verificando mockAlunos. Tipo:", typeof mockAlunos, "É Array?", Array.isArray(mockAlunos));
+    
+    if (typeof mockAlunos !== 'undefined' && Array.isArray(mockAlunos) && mockAlunos.length > 0) {
+        console.log("MeusFilhosView: mockAlunos válido. Populando lista...");
+        listaDiv.innerHTML = ''; // Limpa o placeholder
+        cardsContainer.innerHTML = ''; // Limpa a área de cards
+
+        mockAlunos.forEach(function(aluno) {
+            const nomeEscapadoParaJs = escapeJsStringLocal(aluno.nome);
+            
+            // 1. Criar o item da lista
+            const alunoItem = document.createElement('div');
+            alunoItem.className = 'list-group-item list-group-item-action flex-column align-items-start p-3 mb-2 shadow-sm rounded-3 filho-item-class';
+            alunoItem.id = `filho-item-${aluno.id}`;
+
+            alunoItem.innerHTML = `
+                <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0 fw-bold text-primary">${htmlspecialcharsLocal(aluno.nome)}</h5>
+                    <span class="badge bg-info rounded-pill">${htmlspecialcharsLocal(String(aluno.idade))} anos</span>
+                </div>
+                <p class="mb-1 text-muted"><small><strong>Perfil:</strong> ${htmlspecialcharsLocal(aluno.perfil)}</small></p>
+                <div class="d-flex justify-content-end mt-2">
+                    <button class="btn btn-sm btn-outline-primary me-1" 
+                        onclick="window.acaoFilho('GerarAtividade', '${nomeEscapadoParaJs}', '${aluno.id}')">
+                        <i class="bi bi-magic"></i> Gerar Atividade
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-1" 
+                        onclick="window.acaoFilho('Editar', '${nomeEscapadoParaJs}', '${aluno.id}')">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" 
+                        onclick="window.acaoFilho('Excluir', '${nomeEscapadoParaJs}', '${aluno.id}')">
+                        <i class="bi bi-trash3"></i> Excluir
+                    </button>
+                </div>
+            `;
+            listaDiv.appendChild(alunoItem);
+            
+            // 2. Criar o card de destaque
+            const alunoCard = document.createElement('div');
+            alunoCard.className = 'col-md-6 col-lg-4 mb-4';
+            alunoCard.id = `filho-card-${aluno.id}`;
+            
+            // Definir uma cor de destaque com base no ID (apenas para simular variação visual)
+            const cores = ['primary', 'info', 'success', 'warning'];
+            const corDestaque = cores[aluno.id % cores.length];
+            
+            alunoCard.innerHTML = `
+                <div class="card shadow-sm h-100 border-${corDestaque}">
+                    <div class="card-header bg-${corDestaque} bg-opacity-10">
+                        <h5 class="card-title mb-0 text-${corDestaque}">
+                            <i class="bi bi-person-badge me-2"></i>${htmlspecialcharsLocal(aluno.nome)}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="badge bg-${corDestaque} mb-2">${htmlspecialcharsLocal(String(aluno.idade))} anos</span>
+                            <h6 class="fw-bold mb-2">Perfil:</h6>
+                            <p class="card-text">${htmlspecialcharsLocal(aluno.perfil)}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Interesses:</h6>
+                            <p class="card-text">${htmlspecialcharsLocal(aluno.interesses)}</p>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-2">Desafios Atuais:</h6>
+                            <p class="card-text">${htmlspecialcharsLocal(aluno.desafios)}</p>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-end">
+                        <button class="btn btn-sm btn-${corDestaque}" 
+                            onclick="window.acaoFilho('GerarAtividade', '${nomeEscapadoParaJs}', '${aluno.id}')">
+                            <i class="bi bi-magic me-1"></i>Gerar Atividade
+                        </button>
+                    </div>
+                </div>
+            `;
+            cardsContainer.appendChild(alunoCard);
+        });
+        
+        // Mostrar o footer com a contagem
+        if (footerElement) footerElement.style.display = 'block';
+        
+    } else {
+        console.warn("MeusFilhosView: mockAlunos NÃO encontrado ou vazio. Exibindo mensagem 'Nenhum perfil'.");
+        listaDiv.innerHTML = `
+            <div class="list-group-item text-center p-5 text-muted">
+                <i class="bi bi-emoji-neutral fs-1 d-block mb-3 text-secondary"></i>
+                <h5 class="mb-2">Nenhum perfil de filho cadastrado.</h5>
+                <p>Clique em "Adicionar Novo Perfil de Filho" para começar.</p>
+            </div>`;
+        
+        cardsContainer.innerHTML = `
+            <div class="col-12 text-center p-5 bg-light rounded-3">
+                <p class="text-muted">Nenhum perfil disponível para exibir.</p>
+            </div>`;
+    }
+    
+    atualizarContagemVisual(); // Atualiza os contadores e visibilidade
+});
+</script>

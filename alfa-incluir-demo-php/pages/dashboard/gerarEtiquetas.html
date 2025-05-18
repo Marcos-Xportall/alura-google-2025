@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Etiquetas Visuais AlfaIncluir</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons (opcional, se usado no HTML) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --cor-primaria: #007bff;
+            --navbar-height: 70px; 
+        }
+        #areaPreviewWrapper.vertical-a4 { aspect-ratio: 210 / 297; }
+        .etiquetas-grid-folha {
+            display: grid; gap: 8px; height: 100%; width: 100%;
+            grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr);
+        }
+        .etiqueta-grande-preview-item {
+            border: 2px solid #000; background-color: #fff; display: flex;
+            flex-direction: row; align-items: stretch; padding: 5px;
+            box-sizing: border-box; overflow: hidden; 
+        }
+        .etiqueta-grande-preview-item .icone-container {
+            flex-basis: 33.33%; display: flex; align-items: center;
+            justify-content: center; padding: 5px; border-right: 1px dashed #ccc;
+            overflow: hidden; cursor: pointer;
+        }
+        .etiqueta-grande-preview-item .icone-container:hover {
+            background-color: #f8f9fa; 
+        }
+        .etiqueta-grande-preview-item .icone-container img,
+        .etiqueta-grande-preview-item .icone-container i {
+            max-width: 90%; max-height: 90%; object-fit: contain;
+            font-size: 3rem; color: #6c757d;
+        }
+        .etiqueta-grande-preview-item .texto-container {
+            flex-basis: 66.66%; display: flex; align-items: center;
+            justify-content: center; text-align: center; padding: 5px; 
+            overflow: hidden; 
+            position: relative; 
+        }
+        .etiqueta-grande-preview-item .texto-etiqueta-grande {
+            font-weight: bold; 
+            word-break: break-word; 
+            line-height: 1; 
+            text-transform: uppercase; 
+            white-space: normal; 
+            display: inline-block; 
+        }
+        .texto-arcoiris {
+            background-image: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent !important;
+            font-weight: bold; 
+        }
+        .btn-remover-item-lista { font-size: 0.8em; padding: 0.2rem 0.4rem; }
+        .dashboard-card .card-header { display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid px-md-0 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h4 class="mb-1 fw-bold">Gerador de Etiquetas Visuais</h4>
+            <p class="text-muted mb-0">Crie e imprima etiquetas com imagens e texto para objetos e conceitos.</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-pencil-square me-2" style="font-size: 1.3rem;"></i>
+                    <h5 class="mb-0">Criar Novas Etiquetas</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="formGerarEtiquetas" class="dashboard-form">
+                         <p class="text-muted mb-3 pb-2 border-bottom">
+                            <small>Adicione os itens para criar suas etiquetas. A pré-visualização será atualizada ao lado.</small>
+                        </p>
+                        <div class="mb-3">
+                            <label for="itemEtiqueta" class="form-label fw-semibold">Nome do Item para Etiqueta:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control form-control-lg" id="itemEtiqueta" placeholder="Ex: Cadeira, Maçã, Banheiro">
+                                <button class="btn btn-primary" type="button" id="btnAdicionarItem">
+                                    <i class="bi bi-plus-circle-fill me-1"></i> Adicionar
+                                </button>
+                            </div>
+                            <div class="form-text">Pressione Enter ou clique em Adicionar.</div>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="fw-semibold">Itens Adicionados:</h6>
+                            <ul id="listaItensAdicionados" class="list-group" style="max-height: 250px; overflow-y: auto;">
+                                <li class="list-group-item text-muted d-flex justify-content-center align-items-center" id="placeholderListaVazia" style="min-height: 60px;">
+                                    Nenhum item adicionado ainda.
+                                </li>
+                            </ul>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="corBordaEtiqueta" class="form-label fw-semibold">Cor da Borda:</label>
+                                <input type="color" class="form-control form-control-color w-100" id="corBordaEtiqueta" value="#000000" title="Escolha uma cor para a borda">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="corFonteEtiqueta" class="form-label fw-semibold">Cor da Fonte:</label>
+                                <input type="color" class="form-control form-control-color w-100" id="corFonteEtiqueta" value="#333333" title="Escolha uma cor para a fonte">
+                            </div>
+                        </div>
+                         <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="textoArcoirisCheck">
+                            <label class="form-check-label" for="textoArcoirisCheck">Texto com Efeito Arco-Íris</label>
+                        </div>
+                        <button type="button" class="btn btn-success btn-lg w-100 py-3 mt-2 shadow-sm" id="btnGerarPdfEtiquetas">
+                            <i class="bi bi-file-earmark-pdf-fill me-1"></i>
+                            Gerar PDF para Impressão (A4)
+                        </button>
+                    </form>
+                </div>
+            </div>
+             <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                     <i class="bi bi-lightbulb-fill me-2 text-warning"></i>
+                     <h5 class="mb-0">Dicas de Uso</h5>
+                </div>
+                <div class="card-body small">
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fa-solid fa-check text-success me-1"></i> Use nomes simples e diretos.</li>
+                        <li class="mb-2"><i class="fa-solid fa-check text-success me-1"></i> Comece com objetos familiares.</li>
+                        <li class="mb-2"><i class="fa-solid fa-check text-success me-1"></i> Envolva a criança ao colar as etiquetas.</li>
+                        <li class="mb-2"><i class="fa-solid fa-check text-success me-1"></i> Use para nomear objetos no dia a dia.</li>
+                        <li class="mb-2"><i class="fa-solid fa-check text-success me-1"></i> Para conceitos, coloque em local relevante.</li>
+                        <li><i class="fa-solid fa-check text-success me-1"></i> Reforce o nome ao apontar para a etiqueta.</li>
+                    </ul>
+                    <p class="mt-3 fst-italic"><strong>Sugestão IA (Em breve):</strong> IA poderá sugerir ícones e listas de etiquetas!</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-sm sticky-lg-top" style="top: calc(var(--navbar-height, 20px) + 20px);">
+                <div class="card-header bg-light">
+                    <i class="bi bi-eye-fill me-2 text-info"></i>
+                    <h5 class="mb-0">Pré-visualização da Folha A4 <span id="previewTituloDetalhe">(4 etiquetas grandes)</span></h5>
+                </div>
+                <div class="card-body p-3">
+                     <div id="areaPreviewWrapper" class="bg-white border p-2 mx-auto vertical-a4" style="width: 100%; max-width: 500px;">
+                        <div id="areaPreviewEtiquetas" class="etiquetas-grid-folha">
+                            <!-- Etiquetas grandes geradas aqui por JS -->
+                        </div>
+                    </div>
+                     <div id="paginacaoPreviewControls" class="d-flex justify-content-center align-items-center mt-2" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="btnPrevPage"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                        <span id="paginaPreviewInfo" class="mx-2">Página X de Y</span>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" id="btnNextPage">Próxima <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                    <p class="text-center text-muted small mt-2">Esta é uma simulação. O PDF final pode ter pequenas variações.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bibliotecas para PDF - Usando a combinação do SEGUNDO CÓDIGO que funcionava -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const itemInput = document.getElementById('itemEtiqueta');
+    const btnAdicionarItem = document.getElementById('btnAdicionarItem');
+    const listaItensAdicionadosUI = document.getElementById('listaItensAdicionados');
+    const placeholderListaVazia = document.getElementById('placeholderListaVazia');
+    const areaPreviewEtiquetas = document.querySelector('#areaPreviewEtiquetas');
+    const areaPreviewWrapper = document.getElementById('areaPreviewWrapper');
+    const btnGerarPdf = document.getElementById('btnGerarPdfEtiquetas');
+    const corBordaInput = document.getElementById('corBordaEtiqueta');
+    const previewTituloDetalhe = document.getElementById('previewTituloDetalhe');
+    const textoArcoirisCheck = document.getElementById('textoArcoirisCheck'); 
+    const corFonteInput = document.getElementById('corFonteEtiqueta');
+
+    const paginacaoControlsUI = document.getElementById('paginacaoPreviewControls');
+    const btnPrevPage = document.getElementById('btnPrevPage');
+    const btnNextPage = document.getElementById('btnNextPage');
+    const paginaPreviewInfo = document.getElementById('paginaPreviewInfo');
+    
+    let itensParaEtiquetas = []; // <- Usaremos esta variável do seu primeiro código
+    let paginaAtualPreview = 1;
+    const ETIQUETAS_POR_PAGINA_PDF = 4; // <- Constante para PDF, como no segundo código
+
+    function sugerirIconeSimples(texto) {
+        const textoLimpo = texto.toLowerCase().trim();
+        const iconMap = {
+            'cadeira': 'fa-solid fa-chair', 'mesa': 'fa-solid fa-table-cells', 'maçã': 'fa-solid fa-apple-whole',
+            'bola': 'fa-solid fa-futbol', 'carro': 'fa-solid fa-car-side', 'casa': 'fa-solid fa-house-chimney',
+            'livro': 'fa-solid fa-book-open-reader', 'gato': 'fa-solid fa-cat', 'cachorro': 'fa-solid fa-dog',
+            'andromeda': 'fa-solid fa-meteor', 
+            'banheiro': 'fa-solid fa-toilet', 'tv': 'fa-solid fa-tv', 'televisão': 'fa-solid fa-tv',
+            'computador': 'fa-solid fa-computer', 'copo': 'fa-solid fa-glass-water', 'prato': 'fa-solid fa-plate-wheat',
+            'garfo': 'fa-solid fa-utensils', 'faca': 'fa-solid fa-utensils', 'colher': 'fa-solid fa-spoon',
+            'brincar': 'fa-solid fa-puzzle-piece', 'comer': 'fa-solid fa-utensils', 'dormir': 'fa-solid fa-bed',
+            'árvore': 'fa-solid fa-tree', 'lápis': 'fa-solid fa-pencil', 'caneta': 'fa-solid fa-pen-fancy',
+            'tesoura': 'fa-solid fa-scissors', 'flor': 'fa-solid fa-fan', 'sol': 'fa-solid fa-sun',
+            'lua': 'fa-solid fa-moon', 'estrela': 'fa-solid fa-star', 'nuvem': 'fa-solid fa-cloud',
+            'porta': 'fa-solid fa-door-open', 'janela': 'fa-solid fa-igloo', 'sapato': 'fa-solid fa-shoe-prints',
+            'meia': 'fa-solid fa-socks', 'calça': 'fa-solid fa-shirt', 'camiseta': 'fa-solid fa-shirt',
+            'ônibus': 'fa-solid fa-bus-simple', 'avião': 'fa-solid fa-plane-departure', 'barco': 'fa-solid fa-ship',
+            'trem': 'fa-solid fa-train-subway', 'banana': 'fa-solid fa-bacon', 'laranja': 'fa-solid fa-lemon', 'uva': 'fa-solid fa-seedling',
+            'cavalo': 'fa-solid fa-horse'
+        };
+        if (iconMap[textoLimpo]) return iconMap[textoLimpo];
+        if (textoLimpo.includes('comida') || textoLimpo.includes('alimento')) return 'fa-solid fa-utensils';
+        if (textoLimpo.includes('animal')) return 'fa-solid fa-paw';
+        if (textoLimpo.includes('escola') || textoLimpo.includes('estudo')) return 'fa-solid fa-graduation-cap';
+        return 'fa-regular fa-circle-question';
+    }
+
+    function handleImageUpload(event, itemId) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const item = itensParaEtiquetas.find(it => it.id === itemId);
+                if (item) {
+                    item.icone = e.target.result; 
+                    item.isCustomImage = true;
+                    atualizarPreviewEtiquetas();
+                    atualizarListaItensUI(); 
+                }
+            }
+            reader.readAsDataURL(file);
+        } else {
+            alert("Por favor, selecione um arquivo de imagem válido (JPEG, PNG, GIF).");
+            event.target.value = null; 
+        }
+    }
+    
+    function adicionarItem() {
+        const textoItem = itemInput.value.trim();
+        if (textoItem === "") {
+            alert("Por favor, digite o nome do item.");
+            itemInput.focus();
+            return;
+        }
+        if (itensParaEtiquetas.length >= 50) { 
+            alert("Você atingiu o limite de itens que podem ser adicionados.");
+            return;
+        }
+        const iconeSugerido = sugerirIconeSimples(textoItem);
+        itensParaEtiquetas.push({ texto: textoItem, icone: iconeSugerido, id: Date.now(), isCustomImage: false });
+        itemInput.value = "";
+        itemInput.focus();
+        const config = getLayoutConfig();
+        const totalPaginas = Math.ceil(itensParaEtiquetas.length / config.maxEtiquetasPorPagina);
+        if (totalPaginas > paginaAtualPreview && (itensParaEtiquetas.length -1) % config.maxEtiquetasPorPagina === 0) {
+            paginaAtualPreview = totalPaginas;
+        }
+        atualizarListaItensUI();
+        atualizarPreviewEtiquetas();
+    }
+
+    function removerItem(itemId) {
+        itensParaEtiquetas = itensParaEtiquetas.filter(item => item.id !== itemId);
+        const config = getLayoutConfig();
+        const totalPaginasAposRemocao = Math.max(1, Math.ceil(itensParaEtiquetas.length / config.maxEtiquetasPorPagina));
+        if (paginaAtualPreview > totalPaginasAposRemocao) {
+            paginaAtualPreview = totalPaginasAposRemocao;
+        }
+        atualizarListaItensUI();
+        atualizarPreviewEtiquetas();
+    }
+
+    function atualizarListaItensUI() {
+        listaItensAdicionadosUI.innerHTML = '';
+        if (itensParaEtiquetas.length === 0) {
+            listaItensAdicionadosUI.appendChild(placeholderListaVazia);
+            return;
+        }
+        itensParaEtiquetas.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
+            
+            const textoEUpload = document.createElement('div');
+            textoEUpload.className = 'me-auto mb-1 mb-md-0 d-flex align-items-center';
+            const spanTexto = document.createElement('span');
+            spanTexto.textContent = item.texto;
+
+            if (item.isCustomImage && item.icone) {
+                const imgPreview = document.createElement('img');
+                imgPreview.src = item.icone;
+                imgPreview.style.width = '20px';
+                imgPreview.style.height = '20px';
+                imgPreview.style.marginRight = '8px';
+                imgPreview.style.marginLeft = '8px';
+                imgPreview.style.objectFit = 'cover';
+                imgPreview.style.border = '1px solid #ddd';
+                textoEUpload.appendChild(imgPreview);
+            } else if (item.icone && !item.isCustomImage){
+                 const iconPreview = document.createElement('i');
+                 iconPreview.className = item.icone + ' mx-2';
+                 textoEUpload.appendChild(iconPreview);
+            }
+
+
+            textoEUpload.appendChild(spanTexto);
+
+            const uploadInputId = `upload-${item.id}`;
+            const uploadLabel = document.createElement('label');
+            uploadLabel.setAttribute('for', uploadInputId);
+            uploadLabel.className = 'btn btn-sm btn-outline-secondary ms-2 py-0 px-1';
+            uploadLabel.innerHTML = `<i class="fa-solid ${item.isCustomImage ? 'fa-image' : 'fa-upload'}"></i>`;
+            uploadLabel.title = item.isCustomImage ? "Alterar imagem personalizada" : "Substituir ícone por imagem";
+
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.id = uploadInputId;
+            uploadInput.accept = "image/jpeg, image/png, image/gif";
+            uploadInput.style.display = 'none';
+            uploadInput.onchange = (event) => handleImageUpload(event, item.id);
+            
+            textoEUpload.appendChild(uploadInput);
+            textoEUpload.appendChild(uploadLabel);
+
+            const btnRemover = document.createElement('button');
+            btnRemover.className = 'btn btn-danger btn-sm btn-remover-item-lista py-0 px-1';
+            btnRemover.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+            btnRemover.title = "Remover item";
+            btnRemover.onclick = () => removerItem(item.id);
+
+            li.appendChild(textoEUpload);
+            li.appendChild(btnRemover);
+            listaItensAdicionadosUI.appendChild(li);
+        });
+    }
+
+    function getLayoutConfig() {
+        // Esta função é do seu primeiro código, define como o PREVIEW é montado.
+        // Para o PDF, usaremos ETIQUETAS_POR_PAGINA_PDF.
+        return {
+            maxEtiquetasPorPagina: 4, gridColsFolha: 1, gridRowsFolha: 4,       
+            pdfGridGap: '8mm', pdfPageOrientation: 'portrait'
+        };
+    }
+
+    function ajustarTamanhoFonteParaCaber(textoElement, containerElement, texto, maxFontSizePx = 70, minFontSizePx = 10) {
+        textoElement.textContent = texto.toUpperCase();
+        textoElement.style.fontSize = maxFontSizePx + 'px';
+        textoElement.style.whiteSpace = 'nowrap'; 
+        textoElement.style.lineHeight = '1';
+
+        let currentFontSize = maxFontSizePx;
+        const paddingWidth = parseFloat(window.getComputedStyle(containerElement).paddingLeft) + parseFloat(window.getComputedStyle(containerElement).paddingRight);
+        const paddingHeight = parseFloat(window.getComputedStyle(containerElement).paddingTop) + parseFloat(window.getComputedStyle(containerElement).paddingBottom);
+        const containerWidth = containerElement.clientWidth - paddingWidth;
+        const containerHeight = containerElement.clientHeight - paddingHeight;
+
+        while (textoElement.scrollWidth > containerWidth && currentFontSize > minFontSizePx) {
+            currentFontSize--;
+            textoElement.style.fontSize = currentFontSize + 'px';
+        }
+
+        if (textoElement.scrollWidth > containerWidth && currentFontSize <= minFontSizePx) {
+            textoElement.style.whiteSpace = 'normal';
+            currentFontSize = maxFontSizePx; 
+            textoElement.style.fontSize = currentFontSize + 'px';
+             while ((textoElement.scrollWidth > containerWidth || textoElement.scrollHeight > containerHeight) && currentFontSize > minFontSizePx) {
+                currentFontSize--;
+                textoElement.style.fontSize = currentFontSize + 'px';
+            }
+        }
+        
+        while (textoElement.scrollHeight > containerHeight && currentFontSize > minFontSizePx) {
+            currentFontSize--;
+            textoElement.style.fontSize = currentFontSize + 'px';
+        }
+        
+        if (currentFontSize <= minFontSizePx + 5 && textoElement.scrollWidth > containerWidth * 0.8) {
+             textoElement.style.whiteSpace = 'normal';
+        }
+    }
+
+    function atualizarPreviewEtiquetas() {
+        const config = getLayoutConfig(); // Config do preview
+        areaPreviewEtiquetas.innerHTML = ''; 
+        areaPreviewEtiquetas.className = `etiquetas-grid-folha`; 
+        areaPreviewEtiquetas.style.gridTemplateColumns = `repeat(${config.gridColsFolha}, 1fr)`;
+        areaPreviewEtiquetas.style.gridTemplateRows = `repeat(${config.gridRowsFolha}, 1fr)`;
+        
+        areaPreviewWrapper.className = `bg-white border p-2 mx-auto vertical-a4`; 
+        const corBorda = corBordaInput.value;
+        
+        const totalPaginas = Math.max(1, Math.ceil(itensParaEtiquetas.length / config.maxEtiquetasPorPagina));
+        if (paginaAtualPreview > totalPaginas) paginaAtualPreview = totalPaginas;
+
+        const startIndex = (paginaAtualPreview - 1) * config.maxEtiquetasPorPagina;
+        const itensDaPagina = itensParaEtiquetas.slice(startIndex, startIndex + config.maxEtiquetasPorPagina);
+
+        previewTituloDetalhe.textContent = `(${config.maxEtiquetasPorPagina} etiquetas grandes)`;
+
+        for (let i = 0; i < config.maxEtiquetasPorPagina; i++) {
+            const etiquetaGrandeDiv = document.createElement('div');
+            etiquetaGrandeDiv.className = 'etiqueta-grande-preview-item';
+            etiquetaGrandeDiv.style.borderColor = corBorda;
+
+            const item = itensDaPagina[i]; 
+
+            const iconeContainer = document.createElement('div');
+            iconeContainer.className = 'icone-container';
+            const textoContainer = document.createElement('div');
+            textoContainer.className = 'texto-container';
+            const textoElement = document.createElement('span'); 
+            textoElement.className = 'texto-etiqueta-grande';
+
+            etiquetaGrandeDiv.appendChild(iconeContainer);
+            etiquetaGrandeDiv.appendChild(textoContainer);
+            textoContainer.appendChild(textoElement);
+
+            if (item) { 
+                iconeContainer.dataset.itemId = item.id; 
+                iconeContainer.title = "Clique para alterar a imagem"; 
+                iconeContainer.onclick = function() {
+                    const inputId = `upload-${this.dataset.itemId}`;
+                    document.getElementById(inputId)?.click();
+                };
+
+                if (item.isCustomImage && item.icone) { 
+                    const imgElement = document.createElement('img');
+                    imgElement.src = item.icone; 
+                    iconeContainer.appendChild(imgElement);
+                } else if (item.icone) { 
+                    const iconElement = document.createElement('i');
+                    iconElement.className = `${item.icone}`; 
+                    iconeContainer.appendChild(iconElement);
+                } else {
+                     iconeContainer.innerHTML = `<i class="fa-regular fa-image" style="font-size:2rem; color:#ccc;"></i>`; 
+                }
+                
+                // Adicionar ao DOM temporariamente para medir, depois ajustar
+                areaPreviewEtiquetas.appendChild(etiquetaGrandeDiv);
+                ajustarTamanhoFonteParaCaber(textoElement, textoContainer, item.texto, 70, 12);
+                areaPreviewEtiquetas.removeChild(etiquetaGrandeDiv); // Remover para readicionar na ordem correta
+
+
+                if (textoArcoirisCheck.checked) {
+                    textoElement.classList.add('texto-arcoiris');
+                    textoElement.style.color = 'transparent'; 
+                } else {
+                    textoElement.classList.remove('texto-arcoiris'); 
+                    textoElement.style.color = corFonteInput.value; 
+                    textoElement.style.backgroundImage = 'none'; 
+                }
+            } else { 
+                iconeContainer.innerHTML = `<i class="fa-regular fa-image" style="font-size:2rem; color:#ccc;"></i>`;
+                textoContainer.innerHTML = `<span class="text-muted small p-1">(vazio)</span>`;
+            }
+            areaPreviewEtiquetas.appendChild(etiquetaGrandeDiv);
+        }
+        atualizarControlesPaginacaoPreview(totalPaginas);
+    }
+    
+    function atualizarControlesPaginacaoPreview(totalPaginas) {
+         if (totalPaginas <= 1 && itensParaEtiquetas.length <= getLayoutConfig().maxEtiquetasPorPagina) {
+            if (paginacaoControlsUI) paginacaoControlsUI.style.display = 'none';
+            return;
+        }
+        if (paginacaoControlsUI) {
+            paginacaoControlsUI.style.display = 'flex';
+            paginaPreviewInfo.textContent = `Página ${paginaAtualPreview} de ${totalPaginas}`;
+            btnPrevPage.disabled = paginaAtualPreview === 1;
+            btnNextPage.disabled = paginaAtualPreview === totalPaginas;
+        }
+    }
+
+    // Event Listeners do seu primeiro código (interface)
+    btnAdicionarItem.addEventListener('click', adicionarItem);
+    itemInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); adicionarItem(); }
+    });
+    corBordaInput.addEventListener('input', atualizarPreviewEtiquetas);
+    textoArcoirisCheck.addEventListener('change', function() {
+        corFonteInput.disabled = this.checked; 
+        atualizarPreviewEtiquetas();
+    }); 
+    corFonteInput.addEventListener('input', function() { 
+        if (!textoArcoirisCheck.checked) { 
+            atualizarPreviewEtiquetas();
+        }
+    });
+    if (btnPrevPage) btnPrevPage.addEventListener('click', () => {
+        if (paginaAtualPreview > 1) { paginaAtualPreview--; atualizarPreviewEtiquetas(); }
+    });
+    if (btnNextPage) btnNextPage.addEventListener('click', () => {
+        const totalPaginas = Math.ceil(itensParaEtiquetas.length / getLayoutConfig().maxEtiquetasPorPagina);
+        if (paginaAtualPreview < totalPaginas) { paginaAtualPreview++; atualizarPreviewEtiquetas(); }
+    });
+
+    // ===================================================================================
+    // INÍCIO DA LÓGICA DE GERAR PDF (Adaptada do SEGUNDO código)
+    // ===================================================================================
+    btnGerarPdf.addEventListener('click', function() {
+        if (itensParaEtiquetas.length === 0) {
+            alert('Adicione pelo menos um item para gerar o PDF.');
+            return;
+        }
+        // Verifica se as bibliotecas jsPDF e html2canvas estão carregadas
+        if (typeof jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+            alert('As bibliotecas para gerar PDF não estão disponíveis. Verifique sua conexão ou o console.');
+            console.error("jsPDF ou html2canvas não está definido.");
+            return;
+        }
+        
+        const btnOriginalText = btnGerarPdf.innerHTML;
+        btnGerarPdf.disabled = true;
+        btnGerarPdf.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Gerando PDF...';
+        
+        const pdfContainer = document.createElement('div');
+        pdfContainer.style.position = 'absolute';
+        pdfContainer.style.left = '-9999px'; // Mantém fora da tela
+        pdfContainer.style.top = '-9999px';
+        // pdfContainer.style.width = '210mm'; // Opcional, a largura das páginas internas define
+        document.body.appendChild(pdfContainer);
+
+        const totalPaginasPdf = Math.ceil(itensParaEtiquetas.length / ETIQUETAS_POR_PAGINA_PDF);
+        const corBordaSelecionada = corBordaInput.value;
+        const aplicarArcoiris = textoArcoirisCheck.checked;
+        const corFonteSelecionada = corFonteInput.value;
+        
+        for (let paginaNum = 0; paginaNum < totalPaginasPdf; paginaNum++) {
+            const paginaDiv = document.createElement('div');
+            // Estilos da página A4 para o PDF
+            paginaDiv.style.width = '210mm';
+            paginaDiv.style.height = '297mm';
+            paginaDiv.style.padding = '10mm'; // Margem da página
+            paginaDiv.style.boxSizing = 'border-box';
+            paginaDiv.style.backgroundColor = 'white';
+            // Para html2canvas, cada "página" é um elemento.
+            // Se for imprimir múltiplas páginas de uma vez com html2canvas,
+            // pode ser necessário adicionar uma margem ou garantir que `break-before: page;` seja respeitado.
+            // Para esta abordagem, vamos renderizar cada página em um 'div' e adicioná-la ao pdfContainer.
+            // Se o html2canvas capturar o pdfContainer inteiro, ele pode tentar colocar tudo numa imagem só.
+            // A lógica do segundo código de gerar um canvas grande e fatiar é mais robusta para múltiplas páginas.
+
+            // Grid para as etiquetas DENTRO da página
+            paginaDiv.style.display = 'grid';
+            paginaDiv.style.gridTemplateColumns = '1fr'; // Uma coluna de etiquetas
+            paginaDiv.style.gridTemplateRows = `repeat(${ETIQUETAS_POR_PAGINA_PDF}, 1fr)`; // 4 linhas
+            paginaDiv.style.gap = '10mm'; // Espaço entre etiquetas
+            paginaDiv.style.height = 'calc(297mm - 20mm)'; // Altura útil da página (descontando paddings)
+
+
+            const startIndex = paginaNum * ETIQUETAS_POR_PAGINA_PDF;
+            const itensDaPaginaAtual = itensParaEtiquetas.slice(startIndex, startIndex + ETIQUETAS_POR_PAGINA_PDF);
+            
+            for (let i = 0; i < ETIQUETAS_POR_PAGINA_PDF; i++) {
+                const etiquetaPdfDiv = document.createElement('div');
+                // Estilos da etiqueta individual
+                etiquetaPdfDiv.style.border = `2px solid ${corBordaSelecionada}`;
+                etiquetaPdfDiv.style.display = 'flex';
+                etiquetaPdfDiv.style.backgroundColor = 'white';
+                etiquetaPdfDiv.style.overflow = 'hidden';
+                etiquetaPdfDiv.style.fontFamily = 'Arial, sans-serif'; // Fonte padrão para PDF
+
+                const iconePdfContainer = document.createElement('div');
+                iconePdfContainer.style.flex = '0 0 33%'; // Ocupa 1/3
+                iconePdfContainer.style.borderRight = '1px dashed #ccc';
+                iconePdfContainer.style.display = 'flex';
+                iconePdfContainer.style.justifyContent = 'center';
+                iconePdfContainer.style.alignItems = 'center';
+                iconePdfContainer.style.padding = '5mm'; 
+                iconePdfContainer.style.overflow = 'hidden';
+
+                const textoPdfContainer = document.createElement('div');
+                textoPdfContainer.style.flex = '0 0 67%'; // Ocupa 2/3
+                textoPdfContainer.style.display = 'flex';
+                textoPdfContainer.style.flexDirection = 'column'; // Para empilhar, embora só tenhamos nome
+                textoPdfContainer.style.justifyContent = 'center';
+                textoPdfContainer.style.alignItems = 'center';
+                textoPdfContainer.style.textAlign = 'center';
+                textoPdfContainer.style.padding = '3mm 5mm'; // Padding vertical e horizontal
+                textoPdfContainer.style.overflow = 'hidden';
+
+                const item = itensDaPaginaAtual[i];
+                if (item) {
+                    if (item.isCustomImage && item.icone) { // Se é imagem personalizada (DataURL)
+                        const imgElement = document.createElement('img');
+                        imgElement.src = item.icone;
+                        imgElement.style.maxWidth = '95%';
+                        imgElement.style.maxHeight = '95%';
+                        imgElement.style.objectFit = 'contain';
+                        iconePdfContainer.appendChild(imgElement);
+                    } else if (item.icone) { // Se é ícone Font Awesome
+                        const iconElement = document.createElement('i');
+                        iconElement.className = item.icone; // Ex: "fa-solid fa-chair"
+                        iconElement.style.fontSize = '30pt'; // Tamanho do ícone para PDF
+                        iconElement.style.color = '#333';
+                        iconePdfContainer.appendChild(iconElement);
+                    } else {
+                        iconePdfContainer.innerHTML = `<span style="color:#ccc; font-size:10pt;">(sem imagem)</span>`;
+                    }
+                    
+                    const nomePdfSpan = document.createElement('span');
+                    nomePdfSpan.textContent = item.texto.toUpperCase();
+                    nomePdfSpan.style.fontWeight = 'bold';
+                    // Definir um tamanho de fonte base grande para PDF. Ajuste dinâmico aqui é mais complexo.
+                    // O código original usava '28pt' ou '42pt'. Vamos usar um valor intermediário.
+                    let fontSizePt = 32; 
+                    if (item.texto.length > 15) fontSizePt = 24;
+                    if (item.texto.length > 25) fontSizePt = 18;
+                    nomePdfSpan.style.fontSize = `${fontSizePt}pt`;
+                    nomePdfSpan.style.lineHeight = '1'; // Para maximizar uso vertical
+                    nomePdfSpan.style.width = '100%';
+                    nomePdfSpan.style.wordBreak = 'break-word'; // Quebrar palavras longas
+
+                    if (aplicarArcoiris) {
+                        nomePdfSpan.style.backgroundImage = 'linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red)';
+                        nomePdfSpan.style.webkitBackgroundClip = 'text';
+                        nomePdfSpan.style.backgroundClip = 'text';
+                        nomePdfSpan.style.color = 'transparent';
+                    } else {
+                        nomePdfSpan.style.color = corFonteSelecionada;
+                        nomePdfSpan.style.backgroundImage = 'none'; // Garantir que não haja gradiente
+                    }
+                    textoPdfContainer.appendChild(nomePdfSpan);
+                } else {
+                    // Etiqueta vazia, se houver menos de 4 itens na última página
+                    etiquetaPdfDiv.style.borderStyle = 'dashed';
+                    etiquetaPdfDiv.style.borderColor = '#e0e0e0';
+                }
+                
+                etiquetaPdfDiv.appendChild(iconePdfContainer);
+                etiquetaPdfDiv.appendChild(textoPdfContainer);
+                paginaDiv.appendChild(etiquetaPdfDiv);
+            }
+            pdfContainer.appendChild(paginaDiv);
+        }
+        
+        setTimeout(() => { // Pequeno delay para garantir renderização do DOM
+            const { jsPDF } = window.jspdf; // Acessar jsPDF do objeto global jspdf
+            
+            html2canvas(pdfContainer, {
+                scale: 2, // Melhora a qualidade da imagem gerada
+                allowTaint: true, 
+                useCORS: true, // Importante para imagens externas ou DataURLs
+                logging: false, // Para não poluir o console
+                onclone: (clonedDoc) => { 
+                    // Para Font Awesome, se estiver usando arquivos locais ou precisar de re-styling
+                    const fontAwesomeLink = document.querySelector('link[href*="font-awesome"]');
+                    if (fontAwesomeLink) {
+                        clonedDoc.head.appendChild(fontAwesomeLink.cloneNode(true));
+                    }
+                }
+            }).then(canvas => {
+                const pdf = new jsPDF('portrait', 'mm', 'a4'); // portrait, mm, A4
+                
+                // A lógica do seu segundo código para adicionar múltiplas páginas a partir de um canvas grande
+                const imgProps = pdf.getImageProperties(canvas);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeightCalculated = (imgProps.height * pdfWidth) / imgProps.width; // Altura proporcional do canvas inteiro
+
+                let heightLeft = imgProps.height; // Altura do canvas em pixels
+                let position = 0; // Posição Y no canvas para recortar a imagem
+                const pageHeightA4InCanvasPx = (pdf.internal.pageSize.getHeight() * imgProps.width) / pdfWidth; // Altura de uma página A4 em pixels do canvas
+
+                pdf.addImage(canvas, 'JPEG', 0, position, pdfWidth, pdfHeightCalculated, undefined, 'FAST');
+                heightLeft -= pageHeightA4InCanvasPx;
+
+                while (heightLeft > 0) {
+                    position -= pdf.internal.pageSize.getHeight(); // Mover para cima para a próxima "fatia" no referencial do PDF
+                                                                    // (na verdade, o y da imagem no addImage será o negativo da posição)
+                    pdf.addPage();
+                    // Para a imagem no addImage, o y deve ser a posição negativa para "mostrar" a parte correta do canvas gigante
+                    pdf.addImage(canvas, 'JPEG', 0, position, pdfWidth, pdfHeightCalculated, undefined, 'FAST');
+                    heightLeft -= pageHeightA4InCanvasPx;
+                }
+                
+                const dataAtual = new Date().toISOString().slice(0, 10);
+                pdf.save(`etiquetas_alfa_${dataAtual}.pdf`);
+                
+                document.body.removeChild(pdfContainer);
+                btnGerarPdf.disabled = false;
+                btnGerarPdf.innerHTML = btnOriginalText;
+            }).catch(error => {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Ocorreu um erro ao gerar o PDF. Por favor, tente novamente ou verifique o console.');
+                if (document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
+                btnGerarPdf.disabled = false;
+                btnGerarPdf.innerHTML = btnOriginalText;
+            });
+        }, 500); // Aumentado o delay para garantir renderização, especialmente com imagens
+    });
+    // ===================================================================================
+    // FIM DA LÓGICA DE GERAR PDF
+    // ===================================================================================
+
+    // Inicialização
+    corFonteInput.disabled = textoArcoirisCheck.checked; 
+    atualizarListaItensUI();
+    atualizarPreviewEtiquetas();
+    console.log("Gerador de Etiquetas (Combinado): DOM carregado e scripts inicializados.");
+});
+</script>
+
+</body>
+</html>

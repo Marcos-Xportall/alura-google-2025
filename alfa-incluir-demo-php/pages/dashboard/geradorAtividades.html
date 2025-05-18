@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Atividades Personalizadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* 
+           CSS CORRIGIDO: Se a regra abaixo não tiver conteúdo, REMOVA-A COMPLETAMENTE.
+           Se tiver, deixe o conteúdo.
+        */
+
+        .dashboard-form .form-label.fw-semibold {
+            font-weight: 600; 
+        }
+        :root {
+            --navbar-height: 70px; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid px-md-0">
+    <!-- ... (resto do seu HTML como antes) ... -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h4 class="mb-1 fw-bold">Gerador de Atividades Personalizadas</h4>
+            <p class="text-muted mb-0">Crie atividades sob medida para as necessidades e interesses específicos de cada criança</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7 mb-4 mb-lg-0">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-magic me-2" style="font-size: 1.3rem;"></i>
+                        Criar Nova Atividade Personalizada
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="formGeradorAtividades" class="dashboard-form needs-validation" novalidate>
+                        <p class="text-muted mb-3 pb-2 border-bottom">
+                            <small>Preencha os detalhes abaixo para que nossa Inteligência Artificial possa criar a atividade perfeita para a criança!</small>
+                        </p>
+
+                        <div class="mb-4">
+                            <label for="alunoSelect" class="form-label fw-semibold">Para qual Criança/Aluno?</label>
+                            <select class="form-select form-select-lg" id="alunoSelect" required>
+                                <option value="" selected disabled>Selecione uma criança...</option>
+                                <!-- Opções serão populadas por JavaScript -->
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor, selecione uma criança da lista.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="tipoAtividade" class="form-label fw-semibold">Qual o Foco Principal da Atividade? <span class="text-muted fw-normal">(Opcional)</span></label>
+                            <input type="text" class="form-control" id="tipoAtividade" placeholder="Ex: Coordenação motora fina, Reconhecimento de emoções, Sequenciamento lógico">
+                            <div class="form-text">Ajude a IA a direcionar a sugestão. Se deixar em branco, ela usará os desafios do perfil.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="detalhesAdicionais" class="form-label fw-semibold">Detalhes Adicionais e Observações Importantes</label>
+                            <textarea class="form-control" id="detalhesAdicionais" rows="5" placeholder="Ex: Criança tem sensibilidade a barulhos altos, adora o tema 'espaço sideral', precisa de instruções visuais claras, foco em aumentar tolerância à frustração..."></textarea>
+                            <div class="form-text">Quanto mais informações relevantes você fornecer, mais rica e adequada será a sugestão da IA!</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-2 shadow-sm">
+                            <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="gerarBtnSpinner"></span>
+                            <i class="bi bi-stars me-1" id="gerarBtnIcon"></i>
+                            <span id="gerarBtnText">Gerar Atividade com IA</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm sticky-lg-top" style="top: calc(var(--navbar-height) + 20px);">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-lightbulb-fill me-2 text-warning"></i>
+                        Sugestão de Atividade Gerada
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="resultadoAtividade" class="p-3 bg-white rounded" style="min-height: 400px; max-height: 75vh; overflow-y: auto;">
+                        <div class="text-center text-muted py-5 d-flex flex-column align-items-center justify-content-center h-100" id="placeholderResultado">
+                            <i class="bi bi-palette2 display-1 text-light mb-3"></i>
+                            <p class="mt-2 lead">Sua atividade personalizada e criativa aparecerá aqui!</p>
+                            <p class="small">Preencha o formulário ao lado e clique em "Gerar Atividade".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="mb-3 text-primary"><i class="bi bi-info-circle-fill me-2"></i>Como Aproveitar ao Máximo as Atividades Geradas</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="text-primary me-3">
+                                    <i class="bi bi-1-circle-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Personalize para a Criança</h6>
+                                    <p class="small mb-0">Forneça detalhes específicos sobre interesses, desafios e preferências para obter atividades mais relevantes.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="d-flex">
+                                <div class="text-primary me-3">
+                                    <i class="bi bi-2-circle-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Adapte quando Necessário</h6>
+                                    <p class="small mb-0">Sinta-se à vontade para modificar as atividades de acordo com o que funciona melhor para a criança.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="text-primary me-3">
+                                    <i class="bi bi-3-circle-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Compartilhe Feedback</h6>
+                                    <p class="small mb-0">Depois de aplicar a atividade, registre os resultados para refinar as próximas sugestões.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    if (typeof htmlspecialchars === 'undefined') {
+        function htmlspecialchars(str) {
+            if (typeof str !== 'string') return String(str);
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#039;');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Gerador de Atividades: DOM carregado, verificando 'app' e 'mockAlunos'...");
+        
+        const APP_BASE_PATH_LOCAL = typeof window.APP_BASE_PATH !== 'undefined' ? window.APP_BASE_PATH : '/alfa-incluir-demo-php';
+
+        if (typeof app !== 'undefined' && typeof app.initGeradorAtividadesForm === 'function') {
+            console.log("Gerador de Atividades: app.initGeradorAtividadesForm encontrada, inicializando...");
+            app.initGeradorAtividadesForm(); 
+        } else {
+            // JAVASCRIPT CORRIGIDO: Usando template literals para as strings
+            console.error(`Gerador de Atividades: 'app' ou 'app.initGeradorAtividadesForm' não está disponível. Verifique o carregamento de app.js.`);
+            
+            const form = document.getElementById('formGeradorAtividades'); // Esta linha está correta.
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const resultadoDiv = document.getElementById('resultadoAtividade');
+                    if (resultadoDiv) {
+                        resultadoDiv.innerHTML = `<div class="alert alert-danger">Erro: O sistema principal de geração de atividades (app.js) não foi carregado corretamente.</div>`;
+                    }
+                });
+            }
+            
+            if (typeof mockAlunos !== 'undefined' && Array.isArray(mockAlunos)) {
+                const alunoSelect = document.getElementById('alunoSelect');
+                if (alunoSelect) {
+                    alunoSelect.innerHTML = '<option value="" selected disabled>Selecione uma criança...</option>';
+                    mockAlunos.forEach(function(aluno) {
+                        const option = document.createElement('option');
+                        option.value = String(aluno.id);
+                        option.textContent = `${aluno.nome} (Idade: ${aluno.idade}, Perfil: ${aluno.perfil})`;
+                        alunoSelect.appendChild(option);
+                    });
+                }
+            } else {
+                console.warn(`Gerador de Atividades: mockAlunos não está disponível para o fallback.`);
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+/* css/style.css */
+
+/* 1. Importações e Variáveis :root */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+
+:root {
+    --cor-primaria: #007bff;
+    --cor-primaria-escura: #0056b3;
+    --cor-primaria-clara: #cfe2ff;
+    --cor-secundaria: #ffc107;
+    --cor-secundaria-escura: #d39e00;
+    --cor-acento-verde: #198754;
+    --cor-acento-info: #0dcaf0;
+    --cor-fundo-pagina: #f8f9fa;
+    --cor-fundo-secao-clara: #ffffff;
+    --cor-fundo-secao-escura: #eef2f6;
+    --cor-texto-escuro: #212529;
+    --cor-texto-medio: #495057;
+    --cor-texto-claro: #ffffff;
+    --cor-branca: #ffffff; /* Adicionada explicitamente */
+    --fonte-titulos: 'Poppins', sans-serif;
+    --fonte-corpo: 'Nunito', sans-serif;
+    --borda-padrao: #dee2e6;
+    --sombra-suave: 0 2px 8px rgba(0,0,0,0.06);
+    --sombra-media: 0 5px 15px rgba(0,0,0,0.1);
+    --sombra-card: 0 4px 12px rgba(0,0,0,0.08);
+    --sombra-forte: 0 8px 25px rgba(0,0,0,0.15); /* Adicionada explicitamente */
+    --navbar-height: 70px;
+    --border-radius-padrao: 0.5rem;
+    --border-radius-grande: 0.75rem;
+}
+
+/* 2. Estilos Globais e Resets Básicos */
+body {
+    font-family: var(--fonte-corpo);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--cor-texto-medio);
+    background-color: var(--cor-fundo-pagina);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove o destaque azul ao tocar em links no mobile */
+    -webkit-font-smoothing: antialiased; /* Melhora renderização de fontes no Webkit */
+    -moz-osx-font-smoothing: grayscale; /* Melhora renderização de fontes no Firefox */
+}
+
+:root { 
+        --navbar-height: 70px; 
+        /* --ai-disclaimer-height: auto;  Removido, pois a altura será dinâmica */
+    }
+    /* Ajuste no padding-top do body para acomodar a navbar E o disclaimer */
+    body { padding-top: 0;
+        /* A altura do disclaimer será calculada por JS e adicionada ao padding-top do body */
+        /* padding-top: var(--navbar-height);  Valor inicial apenas para a navbar */
+    }
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; }
+    main, .dashboard-layout { flex-grow: 1; }
+
+    /* Estilo para o disclaimer de IA (Adicionado) */
+    #ai-data-disclaimer {
+        background-color: #cfe2ff; /* cor-primaria-clara do seu CSS */
+        color: #212529; /* cor-texto-escuro */
+        border: none;
+        font-weight: 500;
+        border-radius: 0;
+        font-size: 0.8rem;
+        z-index: 1029; /* Abaixo da navbar (1030) */
+        /* Não é mais fixo, flui com o conteúdo */
+        margin-top: var(--navbar-height); /* EMPURRA PARA BAIXO DA NAVBAR FIXA */
+    }
+    #ai-data-disclaimer strong {
+        color: #0056b3; /* cor-primaria-escura */
+    }
+
+    /* Se o disclaimer NÃO for fixo, o body só precisa de padding para a navbar */
+    /* Se o disclaimer for fixo ABAIXO da navbar, o padding do body precisa considerar ambos */
+    /* Para a abordagem atual (disclaimer não fixo, mas empurrado para baixo da navbar fixa): */
+   
+    main, .dashboard-layout, /* ou o seu wrapper de conteúdo principal */
+    .container-fluid.gerador-wrapper /* Se for o primeiro elemento visível após o disclaimer */ {
+        /* margin-top: ALTURA_DO_DISCLAIMER;  Apenas se o disclaimer não empurrar o conteúdo */
+        /* Como o disclaimer agora tem margin-top: var(--navbar-height), ele já se posiciona */
+        /* corretamente abaixo da navbar. O conteúdo seguinte fluirá normalmente após ele. */
+        /* Então não precisamos de um padding-top adicional no body ou main para o disclaimer, */
+        /* apenas para a navbar fixa, que o próprio Bootstrap lida ou você já lidou com o padding-top no body. */
+    }
+
+    /* Ajuste final para o body, considerando a navbar fixa */
+     body {
+        padding-top: var(--navbar-height); /* Para compensar a navbar fixa */
+    }
+    /* O disclaimer agora terá margin-top para não ficar sob a navbar */
+    #ai-data-disclaimer {
+        /* ... outros estilos ... */
+        /* margin-top: var(--navbar-height);  << Isso faria ele começar abaixo da navbar, mas queremos ele *como parte do fluxo* abaixo da navbar */
+        /* Se a navbar é fixed-top, o conteúdo normal *começaria* por baixo dela. */
+        /* O padding-top no body já cuida disso. O disclaimer, como primeiro elemento */
+        /* após a navbar no fluxo do DOM (mesmo que a navbar seja fixed), aparecerá corretamente. */
+        /* Não precisa de margin-top aqui se o body já tem padding-top. */
+    }
+
+
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fonte-titulos);
+    font-weight: 700;
+    color: var(--cor-texto-escuro);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+}
+.display-2 { font-size: 3.5rem; font-weight: 800; }
+.display-4 { font-size: 2.75rem; font-weight: 700; }
+.display-5 { font-size: 2.25rem; font-weight: 600; }
+
+.lead {
+    font-size: 1.15rem;
+    font-weight: 400;
+}
+
+a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+a:hover {
+    color: var(--cor-primaria-escura);
+}
+
+/* 3. Estilos de Componentes Comuns (Botões, Cards Genéricos, etc.) */
+.btn {
+    font-family: var(--fonte-titulos);
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 0.75rem 1.75rem;
+    transition: box-shadow 0.15s ease-out, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; /* Adicionado border-color e color */
+    letter-spacing: 0.5px;
+    border: 1px solid transparent; /* Para transição suave da borda */
+}
+.btn:hover {
+    box-shadow: var(--sombra-media);
+}
+.btn-lg {
+    padding: 0.9rem 2.25rem;
+    font-size: 1.1rem;
+}
+.btn-warning {
+    background-color: var(--cor-secundaria);
+    border-color: var(--cor-secundaria);
+    color: var(--cor-texto-escuro);
+}
+.btn-warning:hover {
+    background-color: var(--cor-secundaria-escura);
+    border-color: var(--cor-secundaria-escura);
+    color: var(--cor-texto-escuro);
+}
+.btn-light.cta-final-button {
+    color: var(--cor-primaria);
+    font-weight: 700;
+    background-color: var(--cor-branca); /* Garantir fundo branco */
+    border-color: var(--cor-branca); /* Ou uma borda sutil */
+}
+.btn-light.cta-final-button:hover {
+    background-color: var(--cor-fundo-secao-escura); /* Um leve tom ao passar o mouse */
+    color: var(--cor-primaria-escura);
+    border-color: var(--cor-fundo-secao-escura);
+}
+
+/* Componente: Card Informativo Genérico (reutilizável) */
+.info-card-base { /* Estilo base para info-cards */
+    background-color: var(--cor-branca);
+    border-radius: var(--border-radius-grande);
+    box-shadow: var(--sombra-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Para que os cards em uma linha tenham a mesma altura se o conteúdo variar */
+}
+.info-card-base:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--sombra-media);
+}
+.info-card-base .card-icon-large { /* Classe para os ícones grandes nos cards */
+    font-size: 2.8rem;
+    transition: transform 0.3s ease;
+    margin-bottom: 1rem; /* Espaço abaixo do ícone */
+}
+.info-card-base:hover .card-icon-large {
+    transform: scale(1.1);
+}
+.info-card-base .card-title-custom { /* Para títulos dentro dos cards */
+    font-size: 1.1rem;
+    color: var(--cor-texto-escuro);
+    margin-bottom: 0.5rem;
+}
+.info-card-base .card-text-custom { /* Para texto principal nos cards */
+    line-height: 1.6;
+    flex-grow: 1; /* Para o texto preencher o espaço e alinhar botões/links no final */
+    font-size: 0.95rem;
+}
+/* Variações de cor para os ícones dos info-cards */
+.info-card-azul .card-icon-large { color: var(--cor-primaria); }
+.info-card-verde .card-icon-large { color: var(--cor-acento-verde); }
+.info-card-amarelo .card-icon-large { color: var(--cor-secundaria); }
+.info-card-laranja .card-icon-large { color: #fd7e14; }
+
+
+/* 4. Layout Específico da Landing Page */
+/* --- Navbar --- */
+.navbar-brand {
+    font-family: var(--fonte-titulos);
+    font-weight: 800;
+    font-size: 1.6rem;
+}
+
+/* --- Seções da Landing Page --- */
+.landing-page-alfa main > section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+.landing-page-alfa main > section:nth-child(even) {
+    background-color: var(--cor-fundo-secao-escura);
+}
+.landing-page-alfa main > section#hero {
+    background-color: transparent;
+}
+
+.section-header {
+    margin-bottom: 3.5rem;
+}
+.section-header .display-5, .section-header .display-4 {
+    position: relative;
+    padding-bottom: 1rem;
+}
+.section-header .display-5::after, .section-header .display-4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 4px;
+    background-color: var(--cor-secundaria);
+    border-radius: 2px;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    background: linear-gradient(145deg, var(--cor-primaria) 0%, #3d8bfd 50%, #63a4ff 100%);
+    min-height: calc(95vh - var(--navbar-height));
+    color: var(--cor-texto-claro);
+    display: flex; /* Para centralizar verticalmente se necessário */
+    align-items: center; /* Para centralizar verticalmente */
+}
+.hero-mascote {
+    animation: floatUpDown 5s ease-in-out infinite;
+    max-width: 100%; /* Garantir responsividade da imagem */
+    height: auto;
+}
+@keyframes floatUpDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+.hero-section .display-2 {
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+.hero-section .slogan.lead {
+    font-size: 1.35rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+.hero-section .slogan .highlight-hero {
+    color: var(--cor-secundaria);
+    font-weight: 700;
+}
+.hero-section .btn.cta-hero {
+    font-size: 1.2rem;
+    padding: 0.9rem 2.5rem;
+}
+
+.animated-text-hero {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+.animated-text-hero.delay-1 { animation-delay: 0.3s; }
+.animated-text-hero.delay-2 { animation-delay: 0.6s; }
+.animated-button-hero {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation-delay: 0.9s;
+}
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { to { opacity: 1; transform: scale(1); } }
+
+/* --- Seção Problema --- */
+.problema-card { /* Pode herdar de .info-card-base se for visualmente similar */
+    background-color: var(--cor-branca);
+    border-radius: var(--border-radius-padrao);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    padding: 1.5rem; /* Adicionar padding interno */
+    height: 100%;
+}
+.problema-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--sombra-media);
+}
+.problema-card .display-4 { /* Ícones */
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Seção Solução --- */
+.solucao-section {
+    background-color: var(--cor-fundo-secao-clara);
+}
+.solucao-image-placeholder {
+    min-height: 400px;
+    background-color: var(--cor-fundo-secao-escura);
+    border-radius: var(--border-radius-padrao); /* Adicionar borda arredondada */
+}
+.icon-wrapper-solucao {
+    width: 60px; height: 60px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sombra-suave);
+    background-color: var(--cor-primaria-clara); /* Fundo para o wrapper do ícone */
+}
+.icon-wrapper-solucao i {
+    font-size: 1.8rem;
+    color: var(--cor-primaria-escura); /* Cor do ícone */
+}
+.solucao-passo h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    color: var(--cor-primaria);
+}
+
+/* --- Seção Sobre Autismo (Cards Informativos) --- */
+/* Utiliza .info-card-base e suas variações */
+.sobre-autismo-section .fst-italic {
+    font-size: 0.95rem;
+    color: var(--cor-texto-medio);
+}
+ /* Especificamente para o Info Card da Landing Page se precisar diferenciar */
+.info-card-landing { /* Herda de .info-card-base */
+    /* Estilos específicos se houver, senão apenas use .info-card-base */
+}
+.info-card-landing .display-4 { /* Se a classe display-4 for usada para ícones aqui */
+     /* Já coberto por .card-icon-large se você usar essa classe para os ícones */
+}
+ .info-card-landing h5 { /* Já coberto por .card-title-custom */ }
+ .info-card-landing p.small { /* Já coberto por .card-text-custom */ }
+
+
+/* --- Seção Motivação --- */
+.motivacao-section {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../img/background-motivacao-placeholder.jpg') no-repeat center center;
+    background-size: cover;
+    color: var(--cor-texto-claro);
+}
+.motivacao-section h2, .motivacao-section .lead, .motivacao-section strong {
+    color: var(--cor-texto-claro);
+}
+.motivacao-section .display-5::after {
+    background-color: var(--cor-secundaria);
+}
+.criador-foto {
+    border: 7px solid rgba(255,255,255,0.3) !important;
+    max-width: 250px; /* Limitar tamanho da foto */
+    height: auto;
+}
+
+/* --- Seção CTA Final --- */
+.cta-final-section {
+    background-color: var(--cor-fundo-secao-escura);
+}
+.cta-final-section .display-4 {
+    color: var(--cor-primaria);
+}
+.cta-final-section .display-4::after {
+    background-color: var(--cor-primaria);
+}
+.pulse-button-hero { /* Efeito de pulsação */
+    animation: pulseAnimation 2s infinite;
+}
+@keyframes pulseAnimation {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* 5. Layout Específico do Dashboard */
+.dashboard-main-content {
+    background-color: var(--cor-fundo-pagina);
+    padding-top: 2rem; /* Espaço acima do conteúdo do dashboard */
+    padding-bottom: 2rem;
+}
+
+.welcome-section {
+    background-color: var(--cor-primaria-clara);
+    border-radius: var(--border-radius-grande);
+    padding: 2.5rem;
+    margin-bottom: 3rem !important;
+}
+.welcome-section h1 {
+    color: var(--cor-primaria-escura);
+}
+.welcome-section .lead {
+    color: var(--cor-texto-medio);
+}
+
+.dashboard-nav-card { /* Herda de .info-card-base */
+    border: none;
+    /* background-color já vem de .info-card-base */
+}
+/* .dashboard-nav-card:hover já vem de .info-card-base */
+
+.card-icon-dashboard { /* Herda de .card-icon-large */
+    font-size: 3rem; /* Pode sobrescrever se precisar ser diferente */
+}
+.dashboard-nav-card .card-title { /* Herda de .card-title-custom */
+    font-size: 1.2rem;
+}
+.dashboard-nav-card .card-text { /* Herda de .card-text-custom */
+    font-size: 0.9rem;
+    min-height: 60px;
+}
+.dashboard-nav-card .btn {
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    margin-top: auto; /* Alinha o botão na base do card se o card for flex column */
+}
+
+.dashboard-subnav {
+    border-radius: var(--border-radius-padrao);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    background-color: var(--cor-fundo-secao-clara); /* Fundo para a subnav */
+    margin-bottom: 1.5rem; /* Espaço abaixo da subnav */
+    box-shadow: var(--sombra-suave);
+}
+.dashboard-subnav .navbar-brand {
+    font-family: var(--fonte-titulos);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-texto-escuro);
+}
+.dashboard-subnav .nav-link {
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    color: var(--cor-texto-medio);
+}
+.dashboard-subnav .nav-link:hover {
+    color: var(--cor-primaria);
+}
+.dashboard-subnav .nav-link.active {
+    color: var(--cor-primaria);
+    font-weight: 700; /* Destacar mais o ativo */
+}
+
+.view-content-wrapper {
+    border-radius: var(--border-radius-padrao);
+    background-color: var(--cor-fundo-secao-clara); /* Fundo para o conteúdo da view */
+    padding: 1.5rem; /* Padding padrão para o conteúdo da view */
+    box-shadow: var(--sombra-card);
+}
+.view-content-wrapper .breadcrumb {
+    background-color: var(--cor-fundo-secao-escura);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-padrao);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem; /* Espaço abaixo do breadcrumb */
+}
+.view-content-wrapper .breadcrumb-item a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+.view-content-wrapper .breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+.view-content-wrapper .breadcrumb-item.active {
+    color: var(--cor-texto-medio);
+}
+
+.dashboard-form .form-label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+.dashboard-form .form-select-lg,
+.dashboard-form .form-control-lg { /* Aplicar a inputs também */
+    font-size: 1.1rem;
+}
+#resultadoAtividade {
+    margin-top: 2rem;
+    background-color: var(--cor-fundo-secao-escura);
+    padding: 1.5rem; /* Adicionar padding */
+    border-radius: var(--border-radius-padrao); /* Adicionar borda arredondada */
+}
+
+/* 6. Estilos Específicos para Gerador de Etiquetas */
+.etiqueta-grande-preview-item .texto-etiqueta-grande {
+    font-size: 2.8rem; /* Tamanho base grande, será ajustado por JS */
+    line-height: 1;    /* Otimizado para texto grande e ajuste dinâmico */
+    font-weight: bold;
+    word-break: break-word;
+    text-transform: uppercase;
+}
+.texto-arcoiris {
+    background-image: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important; /* Importante para sobrescrever cor sólida */
+    font-weight: bold;
+}
+/* Outros estilos do gerador de etiquetas como .etiquetas-grid-folha, .etiqueta-grande-preview-item, etc. */
+/* (Esses já parecem bem definidos no seu HTML/JS anterior) */
+
+
+/* 7. Estilos Específicos para Feedback e Avaliação de Atividades */
+#secaoFeedbackAtividade {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: var(--border-radius-padrao);
+    margin-top: 1.5rem !important;
+}
+#secaoFeedbackAtividade .form-label.small {
+    font-weight: 500;
+    color: var(--cor-texto-medio);
+}
+.rating .stars {
+    cursor: pointer;
+}
+.rating .star {
+    transition: transform 0.2s ease, color 0.2s ease; /* Adicionar transição de cor */
+}
+.rating .star:hover {
+    transform: scale(1.2);
+}
+.rating .bi-star-fill.text-warning { /* Se usar Bootstrap icons */
+    color: var(--cor-secundaria) !important; /* Usar variável e !important se necessário */
+}
+.rating .fa-star.text-warning { /* Se usar Font Awesome */
+    color: var(--cor-secundaria) !important;
+}
+.alert-success {
+    animation: fadeInUp 0.5s ease;
+}
+#avaliacaoContainer {
+    border-radius: var(--border-radius-padrao);
+    background-color: var(--cor-fundo-secao-escura); /* Usar variável de fundo */
+    transition: background-color 0.3s ease; /* Transição apenas no fundo */
+    padding: 1.5rem; /* Adicionar padding */
+}
+#avaliacaoContainer:hover {
+    background-color: #e2e6ea; /* Um pouco mais escuro no hover */
+}
+#btnSalvarAvaliacao {
+    transition: all 0.2s ease; /* Já definido para .btn */
+}
+/* #btnSalvarAvaliacao:hover já coberto por .btn:hover */
+#ratingText {
+    font-size: 0.9rem;
+    min-width: 100px;
+    display: inline-block;
+    color: var(--cor-texto-medio); /* Usar variável de cor */
+    margin-left: 0.5rem; /* Espaço à esquerda do texto */
+}
+
+
+/* 8. Responsividade (Media Queries) */
+@media (max-width: 991.98px) { /* Telas Médias (Tablets) */
+    .hero-section .display-2 { font-size: 2.8rem; }
+    .hero-section .slogan.lead { font-size: 1.2rem; }
+    .section-header .display-5, .section-header .display-4 { font-size: 2rem; }
+    .problema-card, .info-card-base { margin-bottom: 1.5rem; } /* Usar .info-card-base */
+    .solucao-image-placeholder { min-height: 300px; }
+    .motivacao-section .text-lg-start { text-align: center !important; }
+    .criador-foto { margin-left: auto; margin-right: auto; } /* Centralizar foto */
+}
+
+@media (max-width: 767.98px) { /* Telas Pequenas (Mobiles) */
+    /* body { padding-top: calc(var(--navbar-height) - 10px); } Se a navbar realmente mudar */
+    /* :root { --navbar-height: 60px; } Se a navbar realmente mudar */
+
+    .hero-section {
+        min-height: auto;
+        padding-top: 3rem; padding-bottom: 3rem;
+        text-align: center; /* Centralizar todo o conteúdo do hero */
+    }
+    .hero-section .display-2 { font-size: 2.2rem; }
+    .hero-section .slogan.lead { font-size: 1.1rem; }
+    .hero-section .btn.cta-hero { font-size: 1rem; padding: 0.75rem 1.5rem; }
+    .hero-mascote {
+        max-height: 180px;
+        margin-left: auto; margin-right: auto; /* Centralizar mascote */
+        display: block; /* Para margin auto funcionar */
+        margin-bottom: 1.5rem; /* Espaço abaixo do mascote */
+    }
+
+    .section-header .display-5, .section-header .display-4 { font-size: 1.8rem; }
+    .section-header .lead { font-size: 1rem; }
+
+    .problema-card, .info-card-base {
+        margin-bottom: 1.5rem;
+    }
+    .info-card-base .card-icon-large { font-size: 2.5rem; }
+    .solucao-passo { text-align: center; }
+    .icon-wrapper-solucao { margin-left: auto; margin-right: auto; margin-bottom: 0.5rem; }
+
+    .motivacao-section .display-5 { font-size: 2rem; }
+    .motivacao-section .lead { font-size: 1rem; }
+    .criador-foto { max-width: 180px !important; } /* Reduzir mais em mobile */
+
+    .cta-final-section .display-4 { font-size: 2.2rem; }
+    .cta-final-section .btn.cta-final-button { font-size: 1rem; padding: 0.8rem 1.8rem; }
+
+    /* Ajustes para o Dashboard em mobile */
+    .welcome-section { padding: 1.5rem; }
+    .welcome-section h1 { font-size: 1.8rem; }
+    .dashboard-nav-card { margin-bottom: 1.5rem; }
+    .view-content-wrapper { padding: 1rem; }
+    .dashboard-form .form-select-lg, .dashboard-form .form-control-lg { font-size: 1rem; }
+}
+
+/* 9. Classes Utilitárias (se necessário) */
+.visually-hidden { /* Para acessibilidade, esconder visualmente mas manter para leitores de tela */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
