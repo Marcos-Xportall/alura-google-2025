@@ -62,7 +62,7 @@ Compreender para incluir: essa é a nossa filosofia. Cada indivíduo no espectro
 ## 💖 Uma Jornada Pessoal, Uma Missão Coletiva: A História por Trás do ALFA-INCLUIR
 
 <p align="center">
-  <img src="LINK_PARA_SUA_FOTO_OU_PLACEHOLDER.jpg" alt="[Seu Nome], Idealizador do ALFA-INCLUIR" width="180" style="border-radius:50%; border: 5px solid #007bff;"/>
+  <img src="" alt="Marcos Ribeiro, Idealizador do ALFA-INCLUIR" width="180" style="border-radius:50%; border: 5px solid #007bff;"/>
 </p>
 
 "Como pai de uma criança autista incrível, diagnosticada com nível 2 de suporte, vivencio diariamente os desafios e as imensas alegrias que essa jornada única nos proporciona. A busca incessante por ferramentas, estratégias e, acima de tudo, compreensão que realmente atendam às necessidades singulares do meu filho, me impulsionou a idealizar o ALFA-INCLUIR.
