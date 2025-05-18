@@ -11,7 +11,7 @@ $apiKey = "AIzaSyBnPHxMRFPagyleEpExLF1qStU8tnmpZBI"; // SUA CHAVE REAL ESTÁ AQU
 $response = [];
 
 // Verificação simples se a chave parece um placeholder (pouco provável de ser útil se você sempre colocar a real)
-if (empty($apiKey) || $apiKey === "b2a3f7c1e8d0a9b6f2c3d4e5f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2") { // Use um placeholder diferente aqui se quiser
+if (empty($apiKey) || $apiKey === "") { // Use um placeholder diferente aqui se quiser
     http_response_code(500);
     $response['error'] = "CONFIGURAÇÃO INCOMPLETA: A API Key do Google Gemini não foi definida corretamente no servidor (gemini_proxy.php).";
     echo json_encode($response);
